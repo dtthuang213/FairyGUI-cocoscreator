@@ -56496,6 +56496,12 @@ declare module "cc" {
          */
         editingReturn: EventHandler[];
         /**
+         * @en The restriction on input characters.
+         * @zh 对输入字符的限制。
+         */
+        get restrict(): string;
+        set restrict(value: string);
+        /**
          * @deprecated since v3.5.0, this is an engine private interface that will be removed in the future.
          */
         _impl: __private._cocos_ui_editbox_edit_box_impl_base__EditBoxImplBase | null;
@@ -56512,6 +56518,8 @@ declare module "cc" {
         protected _inputFlag: __private._cocos_ui_editbox_types__InputFlag;
         protected _inputMode: __private._cocos_ui_editbox_types__InputMode;
         protected _maxLength: number;
+        protected _restrict: string;
+        protected _restrictPattern: any;
         constructor();
         __preload(): void;
         onEnable(): void;

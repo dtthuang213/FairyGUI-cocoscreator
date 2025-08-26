@@ -76,11 +76,11 @@ export class GTextInput extends GTextField {
     }
 
     public set restrict(value: string | null) {
-        //not supported
+        this._editBox.restrict = value;
     }
 
     public get restrict(): string | null {
-        return "";
+        return this._editBox.restrict;
     }
 
     public get password(): boolean {
