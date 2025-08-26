@@ -1143,8 +1143,8 @@ export class GObjectPartner extends Component {
             this.scheduleOnce(callback, delay);
     }
 
-    public onClickLink(evt: Event, text: string) {
-        this.node.emit(FUIEvent.LINK, text, evt);
+    public onClickLink(evt: Event, text: string, seg: any) {
+        this.node.emit(FUIEvent.LINK, text, evt, seg);
     }
 
     protected onEnable() {
