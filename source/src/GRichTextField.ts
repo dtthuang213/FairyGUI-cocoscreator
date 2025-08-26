@@ -1,4 +1,4 @@
-import { BitmapFont, HorizontalTextAlignment, RichText, SpriteAtlas, SpriteFrame } from "cc";
+import { BitmapFont, HorizontalTextAlignment, RichText, SpriteAtlas, SpriteFrame, VerticalTextAlignment } from "cc";
 import { PackageItemType, AutoSizeType } from "./FieldTypes";
 import { GTextField } from "./GTextField";
 import { PackageItem } from "./PackageItem";
@@ -56,6 +56,14 @@ export class GRichTextField extends GTextField {
 
     public set align(value: HorizontalTextAlignment) {
         this._richText.horizontalAlign = value;
+    }
+
+    public get verticalAlign(): VerticalTextAlignment {
+        return this._richText.verticalAlign;
+    }
+
+    public set verticalAlign(value: VerticalTextAlignment) {
+        this._richText.verticalAlign = value;
     }
 
     public get underline(): boolean {
@@ -150,7 +158,8 @@ export class GRichTextField extends GTextField {
         }
 
         this._richText.fontSize = fontSize;
-        this._richText.lineHeight = fontSize + this._leading * 2;
+        this._richText.lineHeight = fontSize;
+        this._richText.lineSpacing = this._leading > 0 ? this._leading + 4 : 0;
     }
 
     protected updateOverflow() {
@@ -166,5 +175,10 @@ export class GRichTextField extends GTextField {
 
         if (this._autoSize != AutoSizeType.Both)
             this._richText.maxWidth = this._width;
+    }
+
+    protected handleGrayedChanged(): void {
+        super.handleGrayedChanged();
+        this.updateText();
     }
 }

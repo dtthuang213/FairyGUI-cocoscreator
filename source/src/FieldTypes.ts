@@ -81,6 +81,7 @@ export enum ObjectType {
     Loader3D
 }
 export enum ProgressTitleType {
+    None = -1,
     Percent,
     ValueAndMax,
     Value,

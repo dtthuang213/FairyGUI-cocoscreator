@@ -26,6 +26,7 @@ export class GTextInput extends GTextField {
         this.on(FUIEvent.TOUCH_END, this.onTouchEnd1, this);
 
         this.autoSize = AutoSizeType.None;
+        this._editBox["_updatePlaceholderLabel"]();
     }
 
     public set editable(val: boolean) {
@@ -152,9 +153,12 @@ export class GTextInput extends GTextField {
 
     protected updateFontSize() {
         this._editBox.textLabel.fontSize = this._fontSize;
-        this._editBox.textLabel.lineHeight = this._fontSize + this._leading;
+        this._editBox.textLabel.lineHeight = this._fontSize;
+        this._editBox.textLabel.lineSpacing = this._leading > 0 ? this._leading + 4 : 0;
         if (this._editBox.placeholderLabel)
             this._editBox.placeholderLabel.fontSize = this._editBox.textLabel.fontSize;
+            this._editBox.placeholderLabel.lineHeight = this._editBox.textLabel.lineHeight;
+            this._editBox.placeholderLabel.lineSpacing = this._editBox.textLabel.lineSpacing;
     }
 
     protected updateOverflow() {

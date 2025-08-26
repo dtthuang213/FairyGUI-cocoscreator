@@ -431,10 +431,12 @@ export class GTextField extends GObject {
             else
                 this._label.fontSize = fntConfig.fontSize;
             this._label.lineHeight = fntConfig.fontSize + (this._leading + 4) * fntConfig.fontSize / this._label.fontSize;
+            this._label.lineSpacing = this._leading > 0 ? this._leading + 4 : 0;
         }
         else {
             this._label.fontSize = this._fontSize;
-            this._label.lineHeight = this._fontSize + this._leading;
+            this._label.lineHeight = this._fontSize;
+            this._label.lineSpacing = this._leading > 0 ? this._leading + 4 : 0;
         }
     }
 
