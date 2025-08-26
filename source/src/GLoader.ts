@@ -18,6 +18,7 @@ export class GLoader extends GObject {
     private _autoSize: boolean;
     private _fill: LoaderFillType;
     private _shrinkOnly: boolean;
+    private _useResize: boolean;
     private _showErrorSign: boolean;
     private _playing: boolean;
     private _frame: number = 0;
@@ -147,6 +148,17 @@ export class GLoader extends GObject {
     public set shrinkOnly(value: boolean) {
         if (this._shrinkOnly != value) {
             this._shrinkOnly = value;
+            this.updateLayout();
+        }
+    }
+
+    public get useResize(): boolean {
+        return this._useResize;
+    }
+
+    public set useResize(value: boolean) {
+        if (this._useResize != value) {
+            this._useResize = value;
             this.updateLayout();
         }
     }
@@ -461,12 +473,20 @@ export class GLoader extends GObject {
 
             this._containerUITrans.setContentSize(this._width, this._height);
             this._container.setPosition(pivotCorrectX, pivotCorrectY);
-            if (this._content2) {
-                this._content2.setPosition(pivotCorrectX + this._width * this.pivotX, pivotCorrectY - this._height * this.pivotY);
-                this._content2.setScale(1, 1);
-            }
-            if (cw == this._width && ch == this._height)
+            // if (this._content2) {
+            //     this._content2.setPosition(pivotCorrectX + this._width * this.pivotX, pivotCorrectY - this._height * this.pivotY);
+            //     this._content2.setScale(1, 1);
+            // }
+            if (cw == this._width && ch == this._height) {
+                if (this._content2) {
+                    this._content2.setPosition(0, 0);
+                    if (this._useResize)
+                        this._content2.setSize(cw, ch);
+                    else
+                        this._content2.setScale(1, 1);
+                }
                 return;
+            }
         }
 
         var sx: number = 1, sy: number = 1;
@@ -504,8 +524,12 @@ export class GLoader extends GObject {
 
         this._containerUITrans.setContentSize(cw, ch);
         if (this._content2) {
-            this._content2.setPosition(pivotCorrectX + this._width * this.pivotX, pivotCorrectY - this._height * this.pivotY);
-            this._content2.setScale(sx, sy);
+            if (this._useResize)
+                this._content2.setSize(cw, ch);
+            else
+                this._content2.setScale(sx, sy);
+            // this._content2.setPosition(pivotCorrectX + this._width * this.pivotX, pivotCorrectY - this._height * this.pivotY);
+            // this._content2.setScale(sx, sy);
         }
 
         var nx: number, ny: number;
@@ -522,6 +546,9 @@ export class GLoader extends GObject {
         else
             ny = this._height - ch;
         ny = -ny;
+
+        if (this._content2)
+            this._content2.setPosition(nx, ny);
         this._container.setPosition(pivotCorrectX + nx, pivotCorrectY + ny);
     }
 
@@ -636,6 +663,8 @@ export class GLoader extends GObject {
             this._content.fillClockwise = buffer.readBool();
             this._content.fillAmount = buffer.readFloat();
         }
+        if (buffer.version >= 7)
+            this._useResize = buffer.readBool();
 
         if (this._url)
             this.loadContent();
