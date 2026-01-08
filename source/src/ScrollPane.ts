@@ -81,6 +81,8 @@ export class ScrollPane extends Component {
     private _header: GComponent;
     private _footer: GComponent;
 
+    private _scrollOnOverFlow: boolean = false;
+
     public static draggingPane: ScrollPane;
 
     public setup(buffer: ByteBuffer): void {
@@ -529,6 +531,14 @@ export class ScrollPane extends Component {
 
     public get scrollingPosY(): number {
         return math.clamp(-(-this._container.position.y), 0, this._overlapSize.y);
+    }
+
+    public get scrollOnOverFlow(): boolean {
+        return this._scrollOnOverFlow;
+    }
+
+    public set scrollOnOverFlow(value: boolean) {
+        this._scrollOnOverFlow = value;
     }
 
     public scrollTop(ani?: boolean): void {
@@ -1043,6 +1053,16 @@ export class ScrollPane extends Component {
         if (!this._touchEffect)
             return;
 
+        if (this._scrollOnOverFlow) {
+            if (this._scrollType == ScrollType.Both && (this._overlapSize.x == 0 && this._overlapSize.y == 0)) {
+                return;
+            } else if (this._scrollType == ScrollType.Vertical && this._overlapSize.y == 0) {
+                return;
+            } else if (this._scrollType == ScrollType.Horizontal && this._overlapSize.x == 0) {
+                return;
+            }
+        }
+
         evt.captureTouch();
 
         if (this._tweening != 0) {
@@ -1076,7 +1096,7 @@ export class ScrollPane extends Component {
         if (GObject.draggingObject && GObject.draggingObject.onStage)
             return;
 
-        if (ScrollPane.draggingPane && ScrollPane.draggingPane != this && ScrollPane.draggingPane._owner.onStage)
+        if (ScrollPane.draggingPane && ScrollPane.draggingPane != this && ScrollPane.draggingPane._owner?.onStage)
             return;
 
         var pt: Vec2 = this._owner.globalToLocal(evt.pos.x, evt.pos.y, s_vec2);
@@ -1364,6 +1384,16 @@ export class ScrollPane extends Component {
     private onMouseWheel(evt: FUIEvent) {
         if (!this._mouseWheelEnabled)
             return;
+
+        if (this._scrollOnOverFlow) {
+            if (this._scrollType == ScrollType.Both && (this._overlapSize.x == 0 && this._overlapSize.y == 0)) {
+                return;
+            } else if (this._scrollType == ScrollType.Vertical && this._overlapSize.y == 0) {
+                return;
+            } else if (this._scrollType == ScrollType.Horizontal && this._overlapSize.x == 0) {
+                return;
+            }
+        }
 
         let delta = evt.mouseWheelDelta > 0 ? -1 : 1;
         if (this._overlapSize.x > 0 && this._overlapSize.y == 0) {
