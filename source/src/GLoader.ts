@@ -530,6 +530,7 @@ export class GLoader extends GObject {
                 this._content2.setScale(sx, sy);
             // this._content2.setPosition(pivotCorrectX + this._width * this.pivotX, pivotCorrectY - this._height * this.pivotY);
             // this._content2.setScale(sx, sy);
+            this._content2.setPosition(this._content2.width * this._content2.pivotX, this._content2.height * this._content2.pivotY);
         }
 
         var nx: number, ny: number;
@@ -547,8 +548,6 @@ export class GLoader extends GObject {
             ny = this._height - ch;
         ny = -ny;
 
-        if (this._content2)
-            this._content2.setPosition(nx, ny);
         this._container.setPosition(pivotCorrectX + nx, pivotCorrectY + ny);
     }
 
