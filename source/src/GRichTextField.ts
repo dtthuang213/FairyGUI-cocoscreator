@@ -129,6 +129,13 @@ export class GRichTextField extends GTextField {
         if (this._grayed)
             c = toGrayedColor(c);
         text2 = "<color=" + c.toHEX("#rrggbb") + ">" + text2 + "</color>";
+        if (this._stroke > 0) {
+            let oc = this._strokeColor;
+            if (this._grayed) {
+                oc = toGrayedColor(oc);
+            }
+            text2 = `<outline width=${this._stroke} color=${oc.toHEX("#rrggbb")}>` + text2 + "</outline>";
+        }
 
         if (this._autoSize == AutoSizeType.Both) {
             if (this._richText.maxWidth != 0)
@@ -167,6 +174,16 @@ export class GRichTextField extends GTextField {
             this._richText.maxWidth = 0;
         else
             this._richText.maxWidth = this._width;
+    }
+
+    protected updateStroke() {
+        super.updateStroke();
+        this.updateText();
+    }
+
+    protected updateStrokeColor() {
+        super.updateStrokeColor();
+        this.updateText();
     }
 
     protected handleSizeChanged(): void {

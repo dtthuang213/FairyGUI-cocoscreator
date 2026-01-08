@@ -3,7 +3,7 @@ import { Event as FUIEvent } from "./event/Event";
 import { AutoSizeType, ObjectPropID } from "./FieldTypes";
 import { GObject } from "./GObject";
 import { PackageItem } from "./PackageItem";
-import { UIConfig, getFontByName } from "./UIConfig";
+import { getFontByName, UIConfig } from "./UIConfig";
 import { UIPackage } from "./UIPackage";
 import { ByteBuffer } from "./utils/ByteBuffer";
 import { toGrayedColor } from "./utils/ToolSet";
@@ -16,6 +16,8 @@ export class GTextField extends GObject {
     protected _realFont: string | Font;
     protected _fontSize: number = 0;
     protected _color: Color;
+    protected _promptColor: Color;
+    protected _stroke: number = 0;
     protected _strokeColor?: Color;
     protected _shadowOffset?: Vec2;
     protected _shadowColor?: Color;
@@ -35,6 +37,7 @@ export class GTextField extends GObject {
 
         this._text = "";
         this._color = new Color(255, 255, 255, 255);
+        this._promptColor = new Color(100, 100, 100, 255);
 
         this.createRenderer();
 
@@ -195,11 +198,8 @@ export class GTextField extends GObject {
     }
 
     public set stroke(value: number) {
-        if (!this._label)
-            return;
-
-        this._label.outlineWidth = value;
-        this._label.enableOutline = value > 0;
+        this._stroke = value;
+        this.updateStroke();
         if (value > 0)
             this.updateStrokeColor();
     }
@@ -398,6 +398,13 @@ export class GTextField extends GObject {
 
     protected updateFontColor() {
         this.assignFontColor(this._label, this._color);
+    }
+
+    protected updateStroke() {
+        if (!this._label)
+            return;
+        this._label.outlineWidth = this._stroke;
+        this._label.enableOutline = this._stroke > 0;
     }
 
     protected updateStrokeColor() {
