@@ -47,13 +47,21 @@ export class GTextInput extends GTextField {
         return this._editBox.maxLength;
     }
 
+    public set maxLengthUseChar(val: boolean) {
+        this._editBox.maxLengthUseChar = val;
+    }
+
+    public get maxLengthUseChar(): boolean {
+        return this._editBox.maxLengthUseChar;
+    }
+
     public set promptText(val: string | null) {
         this._promptText = val;
         let newCreate: boolean = !this._editBox.placeholderLabel;
         this._editBox["_updatePlaceholderLabel"]();
         if (newCreate)
             this.assignFont(this._editBox.placeholderLabel, this._realFont);
-        this._editBox.placeholderLabel.string = defaultParser.parse(this._promptText, true);
+        this._editBox.placeholderLabel.string = defaultParser.parse(this._promptText || '', true);
 
         if (defaultParser.lastColor) {
             let c = this._editBox.placeholderLabel.color;
@@ -63,7 +71,7 @@ export class GTextInput extends GTextField {
             this.assignFontColor(this._editBox.placeholderLabel, c);
         }
         else
-            this.assignFontColor(this._editBox.placeholderLabel, this._color);
+            this.assignFontColor(this._editBox.placeholderLabel, this._promptColor);
 
         if (defaultParser.lastSize)
             this._editBox.placeholderLabel.fontSize = parseInt(defaultParser.lastSize);
@@ -73,6 +81,15 @@ export class GTextInput extends GTextField {
 
     public get promptText(): string | null {
         return this._promptText;
+    }
+
+    public set promptColor(value: Color) {
+        this._promptColor = value;
+        this.promptText = this._promptText;
+    }
+
+    public get promptColor(): Color {
+        return this._promptColor;
     }
 
     public set restrict(value: string | null) {
@@ -119,6 +136,11 @@ export class GTextInput extends GTextField {
 
     public set singleLine(value: boolean) {
         this._editBox.inputMode = value ? EditBox.InputMode.SINGLE_LINE : EditBox.InputMode.ANY;
+        if (value) {
+            this._editBox.placeholderLabel.overflow = Overflow.SHRINK;
+        } else {
+            this._editBox.placeholderLabel.overflow = Overflow.CLAMP;
+        }
     }
 
     public requestFocus(): void {
@@ -152,13 +174,15 @@ export class GTextInput extends GTextField {
     }
 
     protected updateFontSize() {
+        let lineSpacing = this._leading > 0 ? this._leading + 4 : 0;
         this._editBox.textLabel.fontSize = this._fontSize;
         this._editBox.textLabel.lineHeight = this._fontSize;
-        this._editBox.textLabel.lineSpacing = this._leading > 0 ? this._leading + 4 : 0;
-        if (this._editBox.placeholderLabel)
-            this._editBox.placeholderLabel.fontSize = this._editBox.textLabel.fontSize;
-            this._editBox.placeholderLabel.lineHeight = this._editBox.textLabel.lineHeight;
-            this._editBox.placeholderLabel.lineSpacing = this._editBox.textLabel.lineSpacing;
+        this._editBox.textLabel.lineSpacing = lineSpacing;
+        if (this._editBox.placeholderLabel) {
+            this._editBox.placeholderLabel.lineHeight = this._fontSize;
+            this._editBox.placeholderLabel.lineSpacing = lineSpacing;
+            this.promptText = this._promptText;
+        }
     }
 
     protected updateOverflow() {
@@ -216,7 +240,11 @@ class MyEditBox extends EditBox {
 
         this.placeholderLabel.getComponent(UITransform).setAnchorPoint(0, 1);
         this.textLabel.getComponent(UITransform).setAnchorPoint(0, 1);
-        this.placeholderLabel.overflow = Overflow.CLAMP;
+        if (this.inputMode == EditBox.InputMode.SINGLE_LINE) {
+            this.placeholderLabel.overflow = Overflow.SHRINK;
+        } else {
+            this.placeholderLabel.overflow = Overflow.CLAMP;
+        }
         this.textLabel.overflow = Overflow.CLAMP;
     }
 

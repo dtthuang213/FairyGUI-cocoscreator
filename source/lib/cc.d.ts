@@ -1989,6 +1989,8 @@ declare module "cc" {
         protected _updateBuiltinMaterial(): Material;
         protected _render(render: __private._cocos_2d_renderer_i_batcher__IBatcher): void;
         protected _canRender(): boolean;
+        customAssembler: IAssembler | undefined;
+        protected _getAssembler(): IAssembler;
         protected _flushAssembler(): void;
     }
     /**
@@ -56430,6 +56432,8 @@ declare module "cc" {
          */
         get maxLength(): number;
         set maxLength(value: number);
+        get maxLengthUseChar(): boolean;
+        set maxLengthUseChar(value: boolean);
         /**
          * @en
          * Set the tabIndex of the DOM input element (only useful on Web).
