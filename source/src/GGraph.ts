@@ -2,6 +2,7 @@ import { Color, Graphics, misc, Vec2 } from "cc";
 import { ObjectPropID } from "./FieldTypes";
 import { GObject } from "./GObject";
 import { ByteBuffer } from "./utils/ByteBuffer";
+import { setAlphaColor } from "./utils/ToolSet";
 
 export class GGraph extends GObject {
     public _content: Graphics;
@@ -96,6 +97,22 @@ export class GGraph extends GObject {
         if (this._type != 0)
             this.updateGraph();
     }
+    
+    public get alpha(): number {
+        return this._alpha;
+    }
+
+    public set alpha(value: number) {
+        if (this._alpha != value) {
+            this._alpha = value;
+
+            this._uiOpacity.opacity = this._alpha * 255;
+
+            this.handleAlphaChanged();
+
+            this.updateGear(3);
+        }
+    }
 
     private updateGraph(): void {
         let ctx = this._content;
@@ -116,6 +133,10 @@ export class GGraph extends GObject {
         ctx.lineWidth = this._lineSize;
         ctx.strokeColor = this._lineColor;
         ctx.fillColor = this._fillColor;
+        if (this._alpha != 1) {
+            ctx.strokeColor = setAlphaColor(this._lineColor, this._alpha);
+            ctx.fillColor = setAlphaColor(this._fillColor, this._alpha);
+        }
 
         if (this._type == 1) {
             if (this._cornerRadius) {
@@ -185,6 +206,10 @@ export class GGraph extends GObject {
 
         if (this._type != 0)
             this.updateGraph();
+    }
+
+    protected handleAlphaChanged(): void {
+        this.updateGraph();
     }
 
     public getProp(index: number): any {
