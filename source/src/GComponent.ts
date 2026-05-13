@@ -773,6 +773,11 @@ export class GComponent extends GObject {
             this._scrollPane.handleControllerChanged(c);
     }
 
+    protected handleDelayCalcBound() {
+        super.handleDelayCalcBound();
+        (this._containerUITrans as any)?.["_markRenderDataDirty"]?.();
+    }
+
     protected _hitTest(pt: Vec2, globalPt: Vec2): GObject {
         if (this._customMask) {
             s_vec2.set(globalPt);

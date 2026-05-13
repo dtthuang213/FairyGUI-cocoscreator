@@ -76,6 +76,7 @@ export class GObject {
     public _treeNode?: GTreeNode;
     public _uiTrans: UITransform;
     public _uiOpacity: UIOpacity;
+    public _delayCalcBound: boolean;
 
     private _hitTestPt?: Vec2;
 
@@ -633,6 +634,14 @@ export class GObject {
         return this._treeNode;
     }
 
+    public get delayCalcBound(): boolean {
+        return this._delayCalcBound;
+    }
+
+    public set delayCalcBound(value: boolean) {
+        this._delayCalcBound = value;
+    }
+
     public get isDisposed(): boolean {
         return this._node == null;
     }
@@ -834,8 +843,11 @@ export class GObject {
         this._node.setPosition(xv, yv);
     }
 
-    protected handleSizeChanged(): void {
+    protected handleSizeChanged(delayCall: boolean = false): void {
         this._uiTrans.setContentSize(this._width, this._height);
+        if (this._delayCalcBound && !delayCall) {
+            this._partner.callLater(this.onHandleDelayCalcBound);
+        }
     }
 
     protected handleGrayedChanged(): void {
@@ -850,6 +862,16 @@ export class GObject {
 
         if (this._parent)
             this._parent.setBoundsChangedFlag();
+    }
+
+    private onHandleDelayCalcBound() {
+        let _t = GObject.cast(this.node);
+        if (_t.isDisposed) return;
+        _t.handleDelayCalcBound();
+    }
+
+    protected handleDelayCalcBound() {
+        (this._uiTrans as any)?.["_markRenderDataDirty"]?.();
     }
 
     public hitTest(globalPt: Vec2, forTouch?: boolean): GObject {

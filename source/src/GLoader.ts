@@ -587,6 +587,11 @@ export class GLoader extends GObject {
         this._content.grayscale = this._grayed;
     }
 
+    protected handleDelayCalcBound() {
+        super.handleDelayCalcBound();
+        (this._containerUITrans as any)?.["_markRenderDataDirty"]?.();
+    }
+
     protected _hitTest(pt: Vec2, globalPt: Vec2): GObject {
         if (this._content2) {
             let obj: GObject = this._content2.hitTest(globalPt);
