@@ -8,6 +8,7 @@ import { EaseType } from "./tween/EaseType";
 import { GTween } from "./tween/GTween";
 import { GTweener } from "./tween/GTweener";
 import { ByteBuffer } from "./utils/ByteBuffer";
+import { GTextField } from "./GTextField";
 
 export class GProgressBar extends GComponent {
     private _min: number = 0;
@@ -45,6 +46,15 @@ export class GProgressBar extends GComponent {
             this._titleType = value;
             this.update(this._value);
         }
+    }
+    
+    public getTextField(): GTextField {
+        if (this._titleObject instanceof GTextField)
+            return this._titleObject;
+        else if ('getTextField' in this._titleObject)
+            return (<any>this._titleObject).getTextField();
+        else
+            return null;
     }
 
     public get min(): number {
