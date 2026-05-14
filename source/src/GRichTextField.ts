@@ -193,8 +193,8 @@ export class GRichTextField extends GTextField {
         if (this._updatingSize)
             return;
 
-        // if (this._autoSize != AutoSizeType.Both)
-        //     this._richText.maxWidth = this._width;
+        if (this._autoSize != AutoSizeType.Both)
+            this._richText.maxWidth = this._width;
     }
 
     protected handleGrayedChanged(): void {
