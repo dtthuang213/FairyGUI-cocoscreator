@@ -138,11 +138,11 @@ export class GRichTextField extends GTextField {
         }
 
         if (this._autoSize == AutoSizeType.Both) {
-            if (this._richText.maxWidth != 0)
-                this._richText["_maxWidth"] = 0;
+            // if (this._richText.maxWidth != 0)
+            //     this._richText["_maxWidth"] = 0;
             this._richText.string = text2;
-            if (this.maxWidth != 0 && this._uiTrans.contentSize.width > this.maxWidth)
-                this._richText.maxWidth = this.maxWidth;
+            // if (this.maxWidth != 0 && this._uiTrans.contentSize.width > this.maxWidth)
+            //     this._richText.maxWidth = this.maxWidth;
         }
         else
             this._richText.string = text2;
@@ -170,10 +170,13 @@ export class GRichTextField extends GTextField {
     }
 
     protected updateOverflow() {
-        if (this._autoSize == AutoSizeType.Both)
-            this._richText.maxWidth = 0;
-        else
+        if (this._autoSize == AutoSizeType.Both) {
+            this._richText.maxWidth = this.maxWidth;
+            this._richText.minWidth = this.minWidth;
+        } else {
             this._richText.maxWidth = this._width;
+            this._richText.minWidth = 0;
+        }
     }
 
     protected updateStroke() {
@@ -190,8 +193,8 @@ export class GRichTextField extends GTextField {
         if (this._updatingSize)
             return;
 
-        if (this._autoSize != AutoSizeType.Both)
-            this._richText.maxWidth = this._width;
+        // if (this._autoSize != AutoSizeType.Both)
+        //     this._richText.maxWidth = this._width;
     }
 
     protected handleGrayedChanged(): void {

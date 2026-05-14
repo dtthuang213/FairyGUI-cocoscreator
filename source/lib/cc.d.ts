@@ -1366,10 +1366,6 @@ declare module "cc" {
         get renderData(): RenderData | null;
         /**
          * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
-         */
-        get useVertexOpacity(): boolean;
-        /**
-         * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
          * @en The component stencil stage (please do not any modification directly on this object)
          * @zh 组件模板缓冲状态 (注意：请不要直接修改它的值)
          */
@@ -1383,7 +1379,6 @@ declare module "cc" {
         protected _stencilStage: __private._cocos_2d_renderer_stencil_manager__Stage;
         protected _assembler: IAssembler | null;
         protected _postAssembler: IAssembler | null;
-        protected _renderDataFlag: boolean;
         protected _renderFlag: boolean;
         protected _renderEntity: __private._cocos_2d_renderer_render_entity__RenderEntity;
         protected _instanceMaterialType: number;
@@ -1397,6 +1392,8 @@ declare module "cc" {
          * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
          */
         _internalId: number;
+        get priority(): number;
+        set priority(val: number);
         /**
          * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
          */
@@ -1406,10 +1403,17 @@ declare module "cc" {
          */
         get renderEntity(): __private._cocos_2d_renderer_render_entity__RenderEntity;
         /**
-         * @en Marks for calculating opacity per vertex
-         * @zh 标记组件是否逐顶点计算透明度
+         * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
          */
-        protected _useVertexOpacity: boolean;
+        protected set _useVertexOpacity(val: boolean);
+        /**
+         * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
+         */
+        protected get _useVertexOpacity(): boolean;
+        /**
+         * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
+         */
+        get useVertexOpacity(): boolean;
         protected _lastParent: Node | null;
         onLoad(): void;
         __preload(): void;
@@ -1456,10 +1460,6 @@ declare module "cc" {
         protected _canRender(): boolean;
         protected _postCanRender(): void;
         protected _updateColor(): void;
-        /**
-         * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
-         */
-        static setEntityColorDirtyRecursively(node: Node, dirty: boolean): void;
         /**
          * @deprecated Since v3.7.0, this is an engine private interface that will be removed in the future.
          */
@@ -2232,9 +2232,6 @@ declare module "cc" {
         get opacity(): number;
         set opacity(value: number);
         protected _opacity: number;
-        protected _getParentOpacity(node: Node): number;
-        protected _parentChanged(): void;
-        protected _setEntityLocalOpacityRecursively(opacity: number): void;
         onEnable(): void;
         onDisable(): void;
     }
@@ -2980,6 +2977,15 @@ declare module "cc" {
         set maxWidth(value: number);
         /**
          * @en
+         * The minimize width of the RichText.
+         *
+         * @zh
+         * 富文本的最小宽度。
+         */
+        get minWidth(): number;
+        set minWidth(value: number);
+        /**
+         * @en
          * Line Height of RichText.
          *
          * @zh
@@ -3035,6 +3041,7 @@ declare module "cc" {
         protected _fontSize: number;
         protected _fontColor: math.Color;
         protected _maxWidth: number;
+        protected _minWidth: number;
         protected _fontFamily: string;
         protected _font: TTFFont | null;
         protected _isSystemFontUsed: boolean;
@@ -3437,6 +3444,9 @@ declare module "cc" {
         constructor(vertexFormat?: gfx.Attribute[]);
         isValid(): false | __private._cocos_2d_renderer_static_vb_accessor__StaticVBAccessor;
         initRenderDrawInfo(comp: UIRenderer, drawInfoType?: __private._cocos_2d_renderer_render_draw_info__RenderDrawInfoType): void;
+        /**
+         * @deprecated Please use RenderEntity.clearRenderDrawInfos instead.
+         */
         removeRenderDrawInfo(comp: UIRenderer): void;
     }
     /**
@@ -3646,6 +3656,9 @@ declare module "cc" {
         get currBufferAccessor(): __private._cocos_2d_renderer_static_vb_accessor__StaticVBAccessor;
         get batches(): memop.CachedArray<__private._cocos_2d_renderer_draw_batch__DrawBatch2D>;
         set currStaticRoot(value: UIStaticBatch | null);
+        /**
+         * @deprecated since v3.8.7
+         */
         set currIsStatic(value: boolean);
         device: gfx.Device;
         constructor(_root: Root);
@@ -7554,6 +7567,11 @@ declare module "cc" {
     export class AnimationManager extends System {
         get blendState(): __private._cocos_3d_skeletal_animation_skeletal_animation_blending__LegacyBlendStateBuffer;
         static ID: string;
+        /**
+         * @en Get the array of all the animation state.
+         * @zh 获取所有动画状态的数组。
+         */
+        get animationStates(): ReadonlyArray<AnimationState>;
         addCrossFade(crossFade: __private._cocos_animation_cross_fade__CrossFade): void;
         removeCrossFade(crossFade: __private._cocos_animation_cross_fade__CrossFade): void;
         update(dt: number): void;
@@ -19902,7 +19920,7 @@ declare module "cc" {
             constructor();
         }
     }
-    export const VERSION = "3.8.6";
+    export const VERSION = "3.8.8";
     /**
      * @en
      * The main namespace of Cocos engine, all engine core classes, functions, properties and constants are defined in this namespace.
@@ -19969,7 +19987,7 @@ declare module "cc" {
         export var update: <T extends object>(obj: T) => T;
         export var isEnum: <EnumT extends object>(enumType: EnumT) => boolean;
         export var getList: <EnumT extends object>(enumType: EnumT) => readonly __private._cocos_core_value_types_enum__Enum.Enumerator<EnumT>[];
-        export var sortList: <EnumT extends object>(enumType: EnumT, compareFn: (a: any, b: any) => number) => void;
+        export var sortList: <EnumT extends object>(enumType: EnumT, compareFn: (a: __private._cocos_core_value_types_enum__Enum.Enumerator<EnumT>, b: __private._cocos_core_value_types_enum__Enum.Enumerator<EnumT>) => number) => void;
     }
     /**
      * Make the enum type `enumType` as enumeration so that Creator may identify, operate on it.
@@ -21502,6 +21520,7 @@ declare module "cc" {
         IsAnchorLocked = 524288,
         IsSizeLocked = 1048576,
         IsPositionLocked = 2097152,
+        IsSkipTransformUpdate = 16777216,
         PersistentMask = -4192741,
         AllHideMasks = 1560
     }
@@ -23455,6 +23474,7 @@ declare module "cc" {
          */
         export function supportsRGBA32FloatTexture(device: gfx.Device): boolean;
         export function isEnableEffect(): boolean;
+        export function getPassPool(): memop.RecyclePool<IRenderPass>;
         export const PIPELINE_FLOW_MAIN = "MainFlow";
         export const PIPELINE_FLOW_FORWARD = "ForwardFlow";
         export const PIPELINE_FLOW_SHADOW = "ShadowFlow";
@@ -23961,6 +23981,7 @@ declare module "cc" {
         pass: renderer.Pass;
         hasPendingModels: boolean;
         dynamicOffsets: number[];
+        sortRender: pipeline.IRenderPass;
         constructor(pass: renderer.Pass);
         destroy(): void;
         merge(subModel: renderer.scene.SubModel, passIdx: number, shaderImplant?: gfx.Shader | null): void;
@@ -27375,7 +27396,7 @@ declare module "cc" {
          * new material instance will be created automatically if the sub-model is already using one.
          * @zh 设置指定子模型的 sharedMaterial，如果对应位置有材质实例则会创建一个对应的材质实例。
          */
-        setSharedMaterial(material: Material | null, index: number): void;
+        setSharedMaterial(material: Material | null, index: number, forceUpdate?: boolean): void;
         /**
          * @en Get the material instance of the specified sub-model.
          * It will create a new instance from the corresponding shared material if not created yet.
@@ -34373,6 +34394,7 @@ declare module "cc" {
             export const UPDATE_FINISHED: number;
             export const UPDATE_FAILED: number;
             export const ERROR_DECOMPRESS: number;
+            export const DOWNLOAD_MANIFEST: number;
         }
         export interface ManifestAsset {
             md5: string;
@@ -34629,6 +34651,7 @@ declare module "cc" {
              * @param callback @en The event callback function @zh 事件处理回调
              */
             setEventCallback(callback: (arg: EventAssetsManager) => void): void;
+            cancelUpdate(): void;
         }
         export namespace AssetsManager {
             export enum State {
@@ -36061,16 +36084,31 @@ declare module "cc" {
             OPAQUE = 1,
             MASK = 2,
             BLEND = 4,
+            /**
+             * @deprecated Please use OPAQUE.
+             */
             OPAQUE_OBJECT = 1,
+            /**
+             * @deprecated Please use MASK.
+             */
             CUTOUT_OBJECT = 2,
+            /**
+             * @deprecated Please use BLEND.
+             */
             TRANSPARENT_OBJECT = 4,
             SHADOW_CASTER = 8,
+            /**
+             * @deprecated Please add 2D node in the render graph.
+             */
             UI = 16,
             DEFAULT_LIGHTING = 32,
             VOLUMETRIC_LIGHTING = 64,
             CLUSTERED_LIGHTING = 128,
             PLANAR_SHADOW = 256,
             GEOMETRY = 512,
+            /**
+             * @deprecated Please add profiler node in the render graph.
+             */
             PROFILER = 1024,
             DRAW_INSTANCING = 2048,
             DRAW_NON_INSTANCING = 4096,
@@ -36523,6 +36561,18 @@ declare module "cc" {
              */
             addCameraQuad(camera: renderer.scene.Camera, material: Material, passID: number, sceneFlags?: SceneFlags): void;
             /**
+             * @beta Feature is under development
+             */
+            addDraw3D(camera: renderer.scene.Camera, models: renderer.scene.Model[], sceneFlags?: SceneFlags): void;
+            /**
+             * @beta Feature is under development
+             */
+            addDraw2D(camera: renderer.scene.Camera): void;
+            /**
+             * @beta Feature is under development
+             */
+            addProfiler(camera: renderer.scene.Camera): void;
+            /**
              * @en Clear current render target.
              * @zh 清除当前渲染目标
              * @param name @en The name of the render target @zh 渲染目标的名字
@@ -36890,6 +36940,24 @@ declare module "cc" {
              * @param camera @en Capturing camera @zh 用于捕捉的相机
              */
             addBuiltinReflectionProbePass(camera: renderer.scene.Camera): void;
+            setMat4(name: string, mat: math.Mat4): void;
+            setQuaternion(name: string, quat: math.Quat): void;
+            setColor(name: string, color: gfx.Color): void;
+            setVec4(name: string, vec: math.Vec4): void;
+            setVec2(name: string, vec: math.Vec2): void;
+            setFloat(name: string, v: number): void;
+            setArrayBuffer(name: string, arrayBuffer: ArrayBuffer): void;
+            setBuffer(name: string, buffer: gfx.Buffer): void;
+            setTexture(name: string, texture: gfx.Texture): void;
+            setSampler(name: string, sampler: gfx.Sampler): void;
+            setBuiltinCameraConstants(camera: renderer.scene.Camera): void;
+            setBuiltinDirectionalLightConstants(light: renderer.scene.DirectionalLight, camera: renderer.scene.Camera): void;
+            setBuiltinSphereLightConstants(light: renderer.scene.SphereLight, camera: renderer.scene.Camera): void;
+            setBuiltinSpotLightConstants(light: renderer.scene.SpotLight, camera: renderer.scene.Camera): void;
+            setBuiltinPointLightConstants(light: renderer.scene.PointLight, camera: renderer.scene.Camera): void;
+            setBuiltinRangedDirectionalLightConstants(light: renderer.scene.RangedDirectionalLight, camera: renderer.scene.Camera): void;
+            setBuiltinDirectionalLightFrustumConstants(camera: renderer.scene.Camera, light: renderer.scene.DirectionalLight, csmLevel?: number): void;
+            setBuiltinSpotLightFrustumConstants(light: renderer.scene.SpotLight): void;
         }
         /**
          * @beta Feature is under development
@@ -51632,6 +51700,8 @@ declare module "cc" {
     export class Profiler extends System {
         constructor();
         init(): void;
+        setBackgroundColor(color: Readonly<math.Color>): void;
+        setFontColor(color: Readonly<math.Color>): void;
         /**
          * @deprecated We have removed this private interface in version 3.8, please use the public interface get stats instead.
          */
@@ -51644,15 +51714,25 @@ declare module "cc" {
         isShowingStats(): boolean;
         hideStats(): void;
         showStats(): void;
+        /** @mangle */
         generateCanvas(): void;
+        /** @mangle */
         generateStats(): void;
+        /** @mangle */
         generateNode(): void;
+        /** @mangle */
         beforeUpdate(): void;
+        /** @mangle */
         afterUpdate(): void;
+        /** @mangle */
         beforePhysics(): void;
+        /** @mangle */
         afterPhysics(): void;
+        /** @mangle */
         beforeDraw(): void;
+        /** @mangle */
         afterRender(): void;
+        /** @mangle */
         afterPresent(): void;
     }
     export const profiler: Profiler;
@@ -51812,6 +51892,7 @@ declare module "cc" {
          * @en Calculate sorting priority
          */
         static getSortingPriority(layer?: number, order?: number): number;
+        static getDefaultPriority(): number;
         /**
          * @zh 获取 Layer 顺序索引
          * @en Get Layer index by id
@@ -51842,6 +51923,34 @@ declare module "cc" {
          * @en Get Builtin Layer array
          */
         static getBuiltinLayers(): ReadonlyArray<__private._cocos_sorting_sorting_layers__SortingItem>;
+    }
+    /**
+     * @en
+     * 2D Render sort component.
+     *
+     * @zh
+     * 2D 渲染排序组件。
+     */
+    export class Sorting2D extends Component {
+        constructor();
+        /**
+         * @zh 组件所属排序层 id，影响组件的渲染排序。
+         * @en The sorting layer id of the component, which affects the rendering order of the component.
+         */
+        get sortingLayer(): number;
+        set sortingLayer(val: number);
+        /**
+         * @zh 组件在当前排序层中的顺序，在默认排序规则中，越小越先渲染。
+         * @en Model Renderer's order within a sorting layer. In the default sorting rule, smaller values are rendered first.
+         */
+        get sortingOrder(): number;
+        set sortingOrder(val: number);
+        protected _sortingLayer: number;
+        protected _sortingOrder: number;
+        protected __preload(): void;
+        protected onEnable(): void;
+        protected onDisable(): void;
+        protected _updateSortingPriority(): void;
     }
     /**
      * @en
@@ -52284,8 +52393,8 @@ declare module "cc" {
                 start = 0,
                 interrupt = 1,
                 end = 2,
-                dispose = 3,
-                complete = 4,
+                complete = 3,
+                dispose = 4,
                 event = 5
             }
             export interface AnimationStateListener {
@@ -53226,16 +53335,16 @@ declare module "cc" {
              */
             END = 2,
             /**
-             * @en The entry will be disposed.
-             * @zh entry 将被销毁。
-             */
-            DISPOSE = 3,
-            /**
              * @en The play spine skeleton animation complete type.
              * @zh 播放骨骼动画完成。
              * @property {Number} COMPLETE
              */
-            COMPLETE = 4,
+            COMPLETE = 3,
+            /**
+             * @en The entry will be disposed.
+             * @zh entry 将被销毁。
+             */
+            DISPOSE = 4,
             /**
              * @en The spine skeleton animation event type.
              * @zh 骨骼动画事件。
@@ -53371,7 +53480,6 @@ declare module "cc" {
             protected _headAniInfo: __private._cocos_spine_skeleton__AnimationItem | null;
             protected _isAniComplete: boolean;
             protected _playTimes: number;
-            protected _needUpdateSkeltonData: boolean;
             protected _listener: __private._cocos_spine_track_entry_listeners__TrackEntryListeners | null;
             _vLength: number;
             _vBuffer: Uint8Array | null;
@@ -53470,6 +53578,13 @@ declare module "cc" {
              */
             get customMaterial(): Material | null;
             set customMaterial(val: Material | null);
+            /**
+             * @deprecated Since v3.8.7, it will be removed in the future.
+             * We are deprecating the `customMaterialInstance` field because it leads to shared material state across all slots,
+             * causing unexpected behavior (like the last blendMode change affecting all slots).
+             * Workaround:
+             *    Switch to customMaterial. Whenever its value is modified, immediately call updateMaterial at the exact point of change.
+             */
             get customMaterialInstance(): renderer.MaterialInstance | null;
             __preload(): void;
             /**
@@ -55105,6 +55220,7 @@ declare module "cc" {
         onEnable(): void;
         onDisable(): void;
         protected _syncAnchorPoint(): void;
+        protected _resize(): void;
         /**
          * @en Gets the layer name.
          * @zh 获取层的名称。
@@ -55615,6 +55731,19 @@ declare module "cc" {
      */
     export class Tween<T extends object = any> {
         constructor(target?: T | null);
+        /**
+         * @en Set whether to bind the current tween's lifecycle with node target's state. (Supported from v3.8.7)
+         * If set it to true :
+         * - When the node is activated, the tween will automatically resume.
+         * - When the node is deactivated, the tween will automatically pause.
+         * - When the node is destroyed, the tween will automatically be destroyed.
+         * @zh 设置当前缓动是否需要关联节点状态。如果设置为真，那么节点被激活，缓动会被自动恢复，节点被禁用，缓动会被自动暂停，节点销毁后，缓动会被自动销毁。 (从 v3.8.7 开始支持)
+         * @param isBindNodeState @en Whether to associate node state for the current tween. @zh 关联节点状态。
+         * @return @en The instance itself for easier chaining. @zh 返回该实例本身，以便于链式调用。
+         * @note @en If not set, the default value is true which is compatible with Creator 2.x. If only works on the tween with Node target.
+         *       @zh 如果此接口未被调用，为兼容 Creator 2.x，其默认值为 true 。此方法只针对 Node 目标的 tween 有效。
+         */
+        bindNodeState(isBindNodeState: boolean): Tween<T>;
         /**
          * @en Sets tween tag
          * @zh 设置缓动的标签
@@ -56524,6 +56653,7 @@ declare module "cc" {
         protected _maxLength: number;
         protected _restrict: string;
         protected _restrictPattern: any;
+        protected _maxLengthUseChar: boolean;
         constructor();
         __preload(): void;
         onEnable(): void;
@@ -58994,133 +59124,1833 @@ declare module "cc" {
     }
     export namespace google {
         export namespace billing {
-            export const BillingClient: typeof __private.__types_jsb__jsb.BillingClient;
-            export type BillingClient = __private.__types_jsb__jsb.BillingClient;
-            export namespace BillingClient {
-                export type Builder = __private.__types_jsb__jsb.BillingClientBuilder;
-                export type ConnectionState = __private.__types_jsb__jsb.ConnectionState;
-                export type BillingResponseCode = __private.__types_jsb__jsb.BillingResponseCode;
-                export type FeatureType = __private.__types_jsb__jsb.FeatureType;
-                export type ProductType = __private.__types_jsb__jsb.ProductType;
+            export class UserChoiceDetails {
+                /**
+                 * @en Returns a token that represents the user's prospective purchase via user choice alternative billing.
+                 * @zh 返回一个令牌，该令牌代表用户通过用户选择的替代 Billing 方式进行的潜在购买。
+                 */
+                getExternalTransactionToken(): string;
+                /**
+                 * @en Returns the external transaction Id of the originating subscription, if the purchase is a subscription upgrade/downgrade.
+                 * @zh 如果购买的是订阅升级/降级，则返回原始订阅的外部交易 ID。
+                 */
+                getOriginalExternalTransactionId(): string;
+                /**
+                 * @en Returns a list of Product to be purchased in the user choice alternative billing flow.
+                 * @zh Product 返回用户选择替代 Billing 流程中要购买的商品列表。
+                 */
+                getProducts(): UserChoiceDetails.Product[];
             }
-            export const BillingResult: typeof __private.__types_jsb__jsb.BillingResult;
-            export type BillingResult = __private.__types_jsb__jsb.BillingResult;
-            export namespace BillingResult {
-                export type Builder = __private.__types_jsb__jsb.BillingResultBuilder;
+            export namespace UserChoiceDetails {
+                export interface Product {
+                    /**
+                     * @en Hash code
+                     * @zh hash 值
+                     */
+                    hashCode(): number;
+                    /**
+                     * @en Returns the id of the product being purchased.
+                     * @zh 返回所购买产品的 ID。
+                     */
+                    getId(): string;
+                    /**
+                     * @en Returns the offer token that was passed in launchBillingFlow to purchase the product.
+                     * @zh 返回在 launchBillingFlow 中传递的用于购买产品的优惠令牌。
+                     */
+                    getOfferToken(): string;
+                    /**
+                     * @en Returns the ProductType of the product being purchased.
+                     * @zh 返回所购买产品的类型（ProductType）。
+                     */
+                    getType(): string;
+                    /**
+                     * @en To string
+                     * @zh 转换成字符串。
+                     */
+                    toString(): string;
+                    /**
+                     * @en Is it equal to another UserChoiceDetails.Product.
+                     * @zh 判断与另一个 UserChoiceDetails.Product 是否相等。
+                     */
+                    equals(product: Product): boolean;
+                }
             }
-            export const InAppMessageResult: typeof __private.__types_jsb__jsb.InAppMessageResult;
-            export type InAppMessageResult = __private.__types_jsb__jsb.InAppMessageResult;
-            export namespace InAppMessageResult {
-                export type InAppMessageResponseCode = __private.__types_jsb__jsb.InAppMessageResponseCode;
+            /**
+             * @en Represents the offer details to buy an one-time purchase product.
+             * @zh 代表一次性购买产品的报价详情。
+             */
+            export interface OneTimePurchaseOfferDetails {
+                /**
+                 * @en The price for the payment in micro-units, where 1,000,000 micro-units equal one unit of the currency.
+                 * @zh 以微单位返回支付价格，其中 1,000,000 个微单位等于 1 个货币单位。
+                 */
+                getPriceAmountMicros(): number;
+                /**
+                 * @en Formatted price for the payment, including its currency sign.
+                 * @zh 支付的格式化价格，包括其货币单位。
+                 */
+                getFormattedPrice(): string;
+                /**
+                 * @en ISO 4217 currency code for price.
+                 * @zh 价格的 ISO 4217 货币代码。
+                 */
+                getPriceCurrencyCode(): string;
             }
-            export const ProductDetails: typeof __private.__types_jsb__jsb.ProductDetails;
-            export type ProductDetails = __private.__types_jsb__jsb.ProductDetails;
+            /**
+             * @en Represents additional details of an installment subscription plan.
+             * @zh 表示分期付款订阅计划的附加详细信息。
+             */
+            export interface InstallmentPlanDetails {
+                /**
+                 * @en Committed payments count after a user signs up for this subscription plan.
+                 * @zh 用户注册此订阅计划后承诺的付款数量。
+                 */
+                getInstallmentPlanCommitmentPaymentsCount(): number;
+                /**
+                 * @en Subsequent committed payments count after this subscription plan renews.
+                 * @zh 此订阅计划续订后的后续承诺付款数量。
+                 */
+                getSubsequentInstallmentPlanCommitmentPaymentsCount(): number;
+            }
+            /**
+             * @en Represents a pricing phase, describing how a user pays at a point in time.
+             * @zh 表示定价阶段，描述用户在某个时间点如何付款。
+             */
+            export interface PricingPhase {
+                /**
+                 * @en Number of cycles for which the billing period is applied.
+                 * @zh Billing 周期适用的周期数。
+                 */
+                getBillingCycleCount(): number;
+                /**
+                 * @en The price for the payment cycle in micro-units, where 1,000,000 micro-units equal one unit of the currency.
+                 * @zh 微单位付款周期的价格，其中 1,000,000 个微单位等于 1 个货币单位。
+                 */
+                getPriceAmountMicros(): number;
+                /**
+                 * @en RecurrenceMode for the pricing phase.
+                 * @zh 定价阶段的 RecurrenceMode 。
+                 */
+                getRecurrenceMode(): number;
+                /**
+                 * @en Billing period for which the given price applies, specified in ISO 8601 format.
+                 * @zh 给定价格适用的 billing 期，以 ISO 8601 格式指定。
+                 */
+                getBillingPeriod(): string;
+                /**
+                 * @en Formatted price for the payment cycle, including its currency sign.
+                 * @zh 付款周期的格式化价格，包括其货币符号。
+                 */
+                getFormattedPrice(): string;
+                /**
+                 * @en Returns ISO 4217 currency code for price.
+                 * @zh 返回价格的 ISO 4217 货币代码。
+                 */
+                getPriceCurrencyCode(): string;
+            }
+            /**
+             * @en Represents a pricing phase, describing how a user pays at a point in time.
+             * @zh 表示定价阶段，描述用户在某个时间点如何付款。
+             */
+            export interface PricingPhases {
+                /**
+                 * @en Returns the pricing phases as a time ordered list of Pricing phase.
+                 * @zh 以定价阶段的时间顺序列表返回定价阶段。
+                 */
+                getPricingPhaseList(): PricingPhase[];
+            }
+            /**
+             * @en Represents the available purchase plans to buy a subscription product.
+             * @zh 表示购买订阅产品可用的购买计划。
+             */
+            export interface SubscriptionOfferDetails {
+                /**
+                 * @en The base plan id associated with the subscription product.
+                 * @zh 与订阅产品相关的基本计划 ID。
+                 */
+                getBasePlanId(): string;
+                /**
+                 * @en The offer id associated with the subscription product.
+                 * @zh 与订阅产品相关的优惠 ID。
+                 */
+                getOfferId(): string;
+                /**
+                 * @en The offer tags associated with this Subscription Offer.
+                 * @zh 与此订阅优惠相关的优惠标签。
+                 */
+                getOfferTags(): string[];
+                /**
+                 * @en The offer token required to pass in launchBillingFlow to purchase the subscription product with these pricing phases.
+                 * @zh 在 launchBillingFlow 中传递以使用这些定价阶段购买订阅产品所需的优惠令牌。
+                 */
+                getOfferToken(): string;
+                /**
+                 * @en The pricing phases for the subscription product.
+                 * @zh 订阅产品的定价区间。
+                 */
+                getPricingPhases(): PricingPhases;
+                /**
+                 * @en The additional details of an installment plan.
+                 * @zh 分期付款计划的附加详细信息。
+                 */
+                getInstallmentPlanDetails(): InstallmentPlanDetails;
+            }
+            /**
+             * @en Represents the details of a one time or subscription product.
+             * @zh 代表一次性或订阅产品的详细信息。
+             */
+            export class ProductDetails {
+                static RecurrenceMode: typeof google.billing.RecurrenceMode;
+                /**
+                 * @en Is it equal to another product detail.
+                 * @zh 判断与另一个产品详情是否相等。
+                 */
+                equals(other: ProductDetails): boolean;
+                /**
+                 * @en Hash code
+                 * @zh hash 值
+                 */
+                hashCode(): number;
+                /**
+                 * @en The description of the product.
+                 * @zh 产品的描述。
+                 */
+                getDescription(): string;
+                /**
+                 * @en The name of the product being sold.
+                 * @zh 所售产品的名称。
+                 */
+                getName(): string;
+                /**
+                 * @en The product's Id.
+                 * @zh 产品的 Id。
+                 */
+                getProductId(): string;
+                /**
+                 * @en The ProductType of the product.
+                 * @zh 产品的类型（ProductType）。
+                 */
+                getProductType(): string;
+                /**
+                 * @en The title of the product being sold.
+                 * @zh 所售产品的标题。
+                 */
+                getTitle(): string;
+                /**
+                 * @en To string
+                 * @zh 转换成字符串。
+                 */
+                toString(): string;
+                /**
+                 * @en The offer details of an one-time purchase product.
+                 * @zh 代表一次性购买产品的报价详情。
+                 */
+                getOneTimePurchaseOfferDetails(): OneTimePurchaseOfferDetails;
+                /**
+                 * @en A list containing all available offers to purchase a subscription product.
+                 * @zh 返回包含购买订阅产品的所有可用优惠的列表。
+                 */
+                getSubscriptionOfferDetails(): SubscriptionOfferDetails[];
+            }
             export namespace ProductDetails {
-                export type RecurrenceMode = __private.__types_jsb__jsb.RecurrenceMode;
-                export type OneTimePurchaseOfferDetails = __private.__types_jsb__jsb.OneTimePurchaseOfferDetails;
-                export type InstallmentPlanDetails = __private.__types_jsb__jsb.InstallmentPlanDetails;
-                export type PricingPhase = __private.__types_jsb__jsb.PricingPhase;
-                export type PricingPhases = __private.__types_jsb__jsb.PricingPhases;
-                export type SubscriptionOfferDetails = __private.__types_jsb__jsb.SubscriptionOfferDetails;
+                export type RecurrenceMode = google.billing.RecurrenceMode;
+                export type OneTimePurchaseOfferDetails = google.billing.OneTimePurchaseOfferDetails;
+                export type InstallmentPlanDetails = google.billing.InstallmentPlanDetails;
+                export type PricingPhase = google.billing.PricingPhase;
+                export type PricingPhases = google.billing.PricingPhases;
+                export type SubscriptionOfferDetails = google.billing.SubscriptionOfferDetails;
             }
-            export const Purchase: typeof __private.__types_jsb__jsb.Purchase;
-            export type Purchase = __private.__types_jsb__jsb.Purchase;
+            /**
+             * @en Account identifiers that were specified when the purchase was made.
+             * @zh 购买时指定的帐户标识符。
+             */
+            export interface AccountIdentifiers {
+                /**
+                 * @en The obfuscated account id specified in setObfuscatedAccountId.
+                 * @zh 在 setObfuscatedAccountId 中设置的混淆账户id
+                 */
+                getObfuscatedAccountId(): string;
+                /**
+                 * @en The obfuscated profile id specified in setObfuscatedProfileId.
+                 * @zh 在 setObfuscatedProfileId 中设置的混淆profile id
+                 */
+                getObfuscatedProfileId(): string;
+            }
+            /**
+             * @en Represents a pending change/update to the existing purchase.
+             * @zh 表示对现有购买的待定更改/更新。
+             */
+            export interface PendingPurchaseUpdate {
+                /**
+                 * @en A token that uniquely identifies this pending transaction.
+                 * @zh 唯一标识此待处理交易的令牌。
+                 */
+                getPurchaseToken(): string;
+                /**
+                 * @en The product ids.
+                 * @zh 产品 ids。
+                 */
+                getProducts(): string[];
+            }
+            /**
+             * @en
+             * Possible purchase states.
+             *
+             * @zh
+             * 可能的购买状态。
+             */
+            export enum PurchaseState {
+                /**
+                 * @en
+                 * Purchase is pending and not yet completed to be processed by your app.
+                 *
+                 * @zh
+                 * 购买处于待处理状态且尚未完成，无法由您的应用程序处理。
+                 */
+                PENDING = 2,
+                /**
+                 * @en
+                 * Purchase is completed..
+                 *
+                 * @zh
+                 * 购买完成。
+                 */
+                PURCHASED = 1,
+                /**
+                 * @en
+                 * Purchase with unknown state.
+                 *
+                 * @zh
+                 * 未知状态
+                 */
+                UNSPECIFIED_STATE = 0
+            }
+            /**
+             * @en Represents an in-app billing purchase.
+             * @zh 代表应用内 billing 购买。
+             */
+            export class Purchase {
+                static PurchaseState: typeof google.billing.PurchaseState;
+                /**
+                 * @en One of PurchaseState indicating the state of the purchase.
+                 * @zh PurchaseState表示购买状态的其中一个值。
+                 */
+                getPurchaseState(): number;
+                /**
+                 * @en The time the product was purchased, in milliseconds since the epoch (Jan 1, 1970).
+                 * @zh 产品购买的时间，以纪元（1970 年 1 月 1 日）以来的毫秒数表示。
+                 */
+                getPurchaseTime(): number;
+                /**
+                 * @en Indicates whether the purchase has been acknowledged.
+                 * @zh 表示是否已确认购买。
+                 */
+                isAcknowledged(): number;
+                /**
+                 * @en Indicates whether the subscription renews automatically.
+                 * @zh 指示订阅是否自动续订。
+                 */
+                isAutoRenewing(): number;
+                /**
+                 * @en Hash code
+                 * @zh hash 值
+                 */
+                hashCode(): number;
+                /**
+                 * @en The quantity of the purchased product.
+                 * @zh 购买产品的数量。
+                 */
+                getQuantity(): number;
+                /**
+                 * @en The payload specified when the purchase was acknowledged or consumed.
+                 * @zh 确认或消费购买时指定的有效负载。
+                 */
+                getDeveloperPayload(): string;
+                /**
+                 * @en Returns a unique order identifier for the transaction.
+                 * @zh 交易的唯一订单标识符。
+                 */
+                getOrderId(): string;
+                /**
+                 * @en Returns a String in JSON format that contains details about the purchase order.
+                 * @zh 包含有关采购订单详细信息的 JSON 格式的字符串。
+                 */
+                getOriginalJson(): string;
+                /**
+                 * @en The application package from which the purchase originated.
+                 * @zh 购买来源的应用程序包。
+                 */
+                getPackageName(): string;
+                /**
+                 * @en A token that uniquely identifies a purchase for a given item and user pair.
+                 * @zh 唯一标识给定商品和用户对的购买的令牌。
+                 */
+                getPurchaseToken(): string;
+                /**
+                 * @en String containing the signature of the purchase data that was signed with the private key of the developer.
+                 * @zh 包含使用开发者私钥签名的购买数据签名的字符串。
+                 */
+                getSignature(): string;
+                /**
+                 * @en To string
+                 * @zh 转换成字符串。
+                 */
+                toString(): string;
+                /**
+                 * @en Returns account identifiers that were provided when the purchase was made.
+                 * @zh 返回购买时提供的帐户标识符。
+                 */
+                getAccountIdentifiers(): AccountIdentifiers;
+                /**
+                 * @en The PendingPurchaseUpdate for an uncommitted transaction.
+                 * @zh 返回 PendingPurchaseUpdate 未提交的事务。
+                 */
+                getPendingPurchaseUpdate(): PendingPurchaseUpdate;
+                /**
+                 * @en the product Ids.
+                 * @zh 产品 Ids。
+                 */
+                getProducts(): string[];
+            }
             export namespace Purchase {
-                export type PurchaseState = __private.__types_jsb__jsb.PurchaseState;
+                export type PurchaseState = google.billing.PurchaseState;
             }
-            export const PendingPurchasesParams: typeof __private.__types_jsb__jsb.PendingPurchasesParams;
-            export type PendingPurchasesParams = __private.__types_jsb__jsb.PendingPurchasesParams;
+            /**
+             * @en BillingConfig stores configuration used to perform billing operations.
+             * @zh BillingConfig 存储用于执行 Billing 操作的配置。
+             */
+            export interface BillingConfig {
+                /**
+                 * @en The customer's country code.
+                 * @zh 客户的国家代码。
+                 */
+                getCountryCode(): string;
+            }
+            /**
+             * @en The details used to report transactions made via alternative billing without user choice to use Google Play Billing.
+             * @zh 用于报告用户未选择使用 Google Play Billing 方式而通过替代 Billing 方式进行的交易的详细信息。
+             */
+            export interface AlternativeBillingOnlyReportingDetails {
+                /**
+                 * @en An external transaction token that can be used to report a transaction made via alternative billing
+                 *     without user choice to use Google Play billing.
+                 * @zh 返回一个外部交易令牌，该令牌可用于报告通过替代付款方式进行的交易，而无需用户选择使用 Google Play 付款方式。
+                 */
+                getExternalTransactionToken(): string;
+            }
+            /**
+             * @en The details used to report transactions made via external offer.
+             * @zh 用于报告通过外部报价进行的交易的详细信息。
+             */
+            export interface ExternalOfferReportingDetails {
+                /**
+                 * @en An external transaction token that can be used to report a transaction made via external offer.
+                 * @zh 可用于报告通过外部报价进行的交易的外部交易令牌。
+                 */
+                getExternalTransactionToken(): string;
+            }
+            /**
+             * @en Results related to in-app messaging.
+             * @zh 与应用程序内消息相关的结果。
+             */
+            export class InAppMessageResult {
+                static InAppMessageResponseCode: typeof InAppMessageResponseCode;
+                /**
+                 * @en Response code for the in-app messaging API call.
+                 * @zh 应用内消息传递 API 调用的响应代码。
+                 */
+                getResponseCode(): number;
+                /**
+                 * @en Token that identifies the purchase to be acknowledged, if any.
+                 * @zh 返回标识需要确认的购买的令牌。
+                 */
+                getPurchaseToken(): string;
+            }
+            export namespace InAppMessageResult {
+                export type InAppMessageResponseCode = google.billing.InAppMessageResponseCode;
+            }
+            /**
+             * @en Params containing the response code and the debug message from In-app Billing API response.
+             * @zh 参数包含来自应用内 Billing API 响应的响应代码和调试消息。
+             */
+            export class BillingResult {
+                static Builder: BillingResult.Builder;
+                /**
+                 * @en Response code returned in In-app Billing API calls.
+                 * @zh 应用内 Billing API 调用中返回的响应代码。
+                 */
+                getResponseCode(): number;
+                /**
+                 * @en Debug message returned in In-app Billing API calls.
+                 * @zh 应用内 Billing API 调用中返回的调试消息。
+                 */
+                getDebugMessage(): string;
+                /**
+                 * @en To string
+                 * @zh 转换成字符串。
+                 */
+                toString(): string;
+                /**
+                 * @en Constructs a new BillingResult.Builder instance.
+                 * @zh 构造一个新 BillingResult.Builder 实例。
+                 */
+                static newBuilder(): BillingResult.Builder;
+            }
+            export namespace BillingResult {
+                export interface Builder {
+                    /**
+                     * @en Setting up debugging information for the in-app Billing API.
+                     * @zh 设置应用内 Billing API 的调试信息。
+                     */
+                    setDebugMessage(productType: string): Builder;
+                    /**
+                     * @en Setting the response code for the in-app in-app Billing API.
+                     * @zh 设置应用内 Billing API 的响应代码。
+                     */
+                    setResponseCode(productType: number): Builder;
+                    /**
+                     * @en Returns BillingResult reference.
+                     * @zh 返回 BillingResult 的引用。
+                     */
+                    build(): BillingResult;
+                }
+            }
+            /**
+             * @en Listener interface for the developer-managed alternative billing flow, when it is chosen by the user when initiating a purchase.
+             * @zh 当用户在发起购买时选择由开发人员管理的替代 Billing 流程的监听器接口。
+             */
+            export interface UserChoiceBillingListener {
+                /**
+                 * @en Called when a user has selected to make a purchase using user choice billing.
+                 * @zh 当用户选择使用用户选择 Billing 进行购买时调用。
+                 */
+                userSelectedAlternativeBilling(userChoiceDetails: UserChoiceDetails): void;
+            }
+            /**
+             * @en Listener interface for purchase updates which happen when, for example, the user buys
+             *     something within the app or by initiating a purchase from Google Play Store.
+             * @zh 用于购买更新的监听器接口，例如，当用户在应用程序内购买某物或从 Google Play 商店发起购买时发生。
+             */
+            export interface PurchasesUpdatedListener {
+                /**
+                 * @en Implement this method to get notifications for purchases updates.
+                 * @zh 实现此方法以获取购买更新的通知。
+                 */
+                onPurchasesUpdated(billingResult: BillingResult, purchases: Purchase[]): void;
+            }
+            /**
+             * @en Callback for setup process. This listener's onBillingSetupFinished method is called when the setup process is complete.
+             * @zh 设置过程的回调。 onBillingSetupFinished 设置过程完成后，会调用此监听器的方法。
+             */
+            export interface BillingClientStateListener {
+                /**
+                 * @en Called to notify that the connection to the billing service was lost.
+                 * @zh 调用来通知与 biiling 服务的连接已丢失。
+                 */
+                onBillingServiceDisconnected(): void;
+                /**
+                 * @en Called to notify that setup is complete.
+                 * @zh 调用来通知设置已完成。
+                 */
+                onBillingSetupFinished(billingResult: BillingResult): void;
+            }
+            /**
+             * @en Parameters to enable pending purchases.
+             * @zh 启用待处理购买的参数。
+             */
+            export class PendingPurchasesParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回 的一个 Builder 实例。
+                 */
+                static newBuilder(): google.billing.PendingPurchasesParams.Builder;
+            }
             export namespace PendingPurchasesParams {
-                export type Builder = __private.__types_jsb__jsb.PendingPurchasesParamsBuilder;
+                export interface Builder {
+                    /**
+                     * @en Enables pending purchase for one-time products.
+                     * @zh 启用一次性产品的待处理购买。
+                     */
+                    enableOneTimeProducts: () => Builder;
+                    /**
+                     * @en Enables pending purchase for prepaid plans.
+                     * @zh 启用预付费计划的待处理购买。
+                     */
+                    enablePrepaidPlans: () => Builder;
+                    /**
+                     * @en Returns PendingPurchasesParams reference to enable pending purchases.
+                     * @zh 返回 PendingPurchasesParams 参考以启用待处理的购买。
+                     */
+                    build: () => PendingPurchasesParams;
+                }
             }
-            export const QueryProductDetailsParams: typeof __private.__types_jsb__jsb.QueryProductDetailsParams;
-            export type QueryProductDetailsParams = __private.__types_jsb__jsb.QueryProductDetailsParams;
+            export class QueryProductDetailsParamsProduct {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回 的一个 Builder 实例。
+                 */
+                static newBuilder(): QueryProductDetailsParams.Product.Builder;
+            }
+            /**
+             * @en Parameters to initiate a query for Product details queryProductDetailsAsync.
+             * @zh 用于启动产品详细信息查询的参数 queryProductDetailsAsync。
+             */
+            export class QueryProductDetailsParams {
+                static Product: typeof google.billing.QueryProductDetailsParamsProduct;
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): QueryProductDetailsParams.Builder;
+            }
             export namespace QueryProductDetailsParams {
-                export type Builder = __private.__types_jsb__jsb.QueryProductDetailsParamsBuilder;
-                export type Product = __private.__types_jsb__jsb.QueryProductDetailsParamsProduct;
+                export interface Builder {
+                    /**
+                     * @en Set the list of Product.
+                     * @zh 设置 Product 列表 。
+                     */
+                    setProductList: (products: QueryProductDetailsParamsProduct[]) => QueryProductDetailsParams.Builder;
+                    /**
+                     * @en Returns an instance of QueryProductDetailsParams.
+                     * @zh 返回一个 QueryProductDetailsParams 实例。
+                     */
+                    build: () => QueryProductDetailsParams;
+                }
+                export type Product = google.billing.QueryProductDetailsParamsProduct;
+                /**
+                 * @en A Product identifier used for querying product details.
+                 * @zh 用于查询产品详细信息的产品标识符。
+                 */
                 export namespace Product {
-                    export type Builder = __private.__types_jsb__jsb.QueryProductDetailsParamsProductBuilder;
+                    export interface Builder {
+                        /**
+                         * @en Sets the product id of the product.
+                         * @zh 设置产品的产品 id 。
+                         */
+                        setProductId: (productID: string) => Builder;
+                        /**
+                         * @en Sets the ProductType of the product.
+                         * @zh 设置产品的类型。
+                         */
+                        setProductType: (productType: string) => Builder;
+                        /**
+                         * @en Returns the Product instance.
+                         * @zh 返回 Product 实例。
+                         */
+                        build: () => QueryProductDetailsParamsProduct;
+                    }
                 }
             }
-            export const BillingFlowParams: typeof __private.__types_jsb__jsb.BillingFlowParams;
-            export type BillingFlowParams = __private.__types_jsb__jsb.BillingFlowParams;
+            /**
+             * @en Listener to a result of product details query.
+             * @zh 监听产品详细信息查询的结果。
+             */
+            export interface ProductDetailsResponseListener {
+                /**
+                 * @en Called to notify that query product details operation has finished.
+                 * @zh 调用以通知查询产品详细信息操作已完成。
+                 */
+                onProductDetailsResponse(billingResult: BillingResult, productDetailsList: ProductDetails[]): void;
+            }
+            /**
+             * @en Callback that notifies when a consumption operation finishes.
+             * @zh 当消费操作完成时通知的回调。
+             */
+            export interface ConsumeResponseListener {
+                /**
+                 * @en Called to notify that a consume operation has finished.
+                 * @zh 调用以通知消费操作已完成。
+                 */
+                onConsumeResponse(billingResult: BillingResult, token: string): void;
+            }
+            /**
+             * @en Listener for the result of an acknowledge purchase request.
+             * @zh 监听确认购买请求的结果。
+             */
+            export interface AcknowledgePurchaseResponseListener {
+                /**
+                 * @en Called to notify that an acknowledge purchase operation has finished.
+                 * @zh 调用以通知确认购买操作已完成。
+                 */
+                onAcknowledgePurchaseResponse(billingResult: BillingResult): void;
+            }
+            export interface BillingClientBuilder {
+                enableAlternativeBillingOnly: () => BillingClientBuilder;
+                enableExternalOffer: () => BillingClientBuilder;
+                enablePendingPurchases: (params: PendingPurchasesParams) => BillingClientBuilder;
+                enableUserChoiceBilling: (userChoiceBillingListener: UserChoiceBillingListener) => BillingClientBuilder;
+                setListener: (listener: PurchasesUpdatedListener) => BillingClientBuilder;
+                build: () => BillingClient;
+            }
+            /**
+             * @en Listener to a result of purchases query.
+             * @zh 监听购买查询的结果。
+             */
+            export interface PurchasesResponseListener {
+                /**
+                 * @en Called to notify that the query purchases operation has finished.
+                 * @zh 调用以通知查询购买操作已完成。
+                 */
+                onQueryPurchasesResponse(billingResult: BillingResult, purchase: Purchase[]): void;
+            }
+            /**
+             * @en Listener for the result of the BillingClient#getBillingConfigAsync API.
+             * @zh 监听 BillingClient#getBillingConfigAsync API 的返回结果。
+             */
+            export interface BillingConfigResponseListener {
+                /**
+                 * @en Called to notify when the get billing config flow has finished.
+                 * @zh 当获取 billing 配置流程完成时调用以通知。
+                 */
+                onBillingConfigResponse(billingResult: BillingResult, billingConfig: BillingConfig): void;
+            }
+            /**
+             * @en Listener for the result of the createAlternativeBillingOnlyReportingDetailsAsync API.
+             * @zh 监听 createAlternativeBillingOnlyReportingDetailsAsync API 的返回结果。
+             */
+            export interface AlternativeBillingOnlyReportingDetailsListener {
+                /**
+                 * @en Called to receive the results from createAlternativeBillingOnlyReportingDetailsAsync when it is finished.
+                 * @zh createAlternativeBillingOnlyReportingDetailsAsync 当其完成时调用来接收结果。
+                 */
+                onAlternativeBillingOnlyTokenResponse(billingResult: BillingResult, alternativeBillingOnlyReportingDetails: AlternativeBillingOnlyReportingDetails): void;
+            }
+            /**
+             * @en Listener for the result of the BillingClient#createExternalOfferReportingDetailsAsync API.
+             * @zh 监听 BillingClient#createExternalOfferReportingDetailsAsync API 的返回结果。
+             */
+            export interface ExternalOfferReportingDetailsListener {
+                /**
+                 * @en Called to receive the results from createExternalOfferReportingDetailsAsync when it is finished.
+                 * @zh createExternalOfferReportingDetailsAsync 当其完成时调用来接收结果。
+                 */
+                onExternalOfferReportingDetailsResponse(billingResult: BillingResult, externalOfferReportingDetails: ExternalOfferReportingDetails): void;
+            }
+            /**
+             * @en Listener for the result of the BillingClient#isAlternativeBillingOnlyAvailableAsync API.
+             * @zh 监听 BillingClient#isAlternativeBillingOnlyAvailableAsync API 的返回结果。
+             */
+            export interface AlternativeBillingOnlyAvailabilityListener {
+                /**
+                 * @en Called to receive the results from BillingClient#isAlternativeBillingOnlyAvailableAsync when it is finished.
+                 * @zh BillingClient#isAlternativeBillingOnlyAvailableAsync 当其完成时调用来接收结果。
+                 */
+                onAlternativeBillingOnlyAvailabilityResponse(billingResult: BillingResult): void;
+            }
+            /**
+             * @en Listener for the result of the BillingClient#isExternalOfferAvailableAsync API.
+             * @zh 监听 BillingClient#isExternalOfferAvailableAsync API 的返回结果。
+             */
+            export interface ExternalOfferAvailabilityListener {
+                /**
+                 * @en Called to receive the results from BillingClient#isExternalOfferAvailableAsync when it is finished.
+                 * @zh BillingClient#isExternalOfferAvailableAsync 当其完成时调用来接收结果。
+                 */
+                onExternalOfferAvailabilityResponse(billingResult: BillingResult): void;
+            }
+            /**
+             * @en Listener for the result of the BillingClient#showAlternativeBillingOnlyInformationDialog API.
+             * @zh 监听 BillingClient#showAlternativeBillingOnlyInformationDialog API 的返回结果。
+             */
+            export interface AlternativeBillingOnlyInformationDialogListener {
+                /**
+                 * @en Called to notify that the alternative billing only dialog flow is finished.
+                 * @zh 调用此命令来通知仅备选 billing 对话流程已完成。
+                 */
+                onAlternativeBillingOnlyInformationDialogResponse(billingResult: BillingResult): void;
+            }
+            /**
+             * @en Listener for the result of the BillingClient#showExternalOfferInformationDialog API.
+             * @zh 监听 BillingClient#showExternalOfferInformationDialog API 的返回结果。
+             */
+            export interface ExternalOfferInformationDialogListener {
+                /**
+                 * @en Called to notify that the external offer information dialog flow is finished.
+                 * @zh 调用以通知外部报价信息对话流程已完成。
+                 */
+                onExternalOfferInformationDialogResponse(billingResult: BillingResult): void;
+            }
+            /**
+             * @en Listener for the result of the in-app messaging flow.
+             * @zh 应用内消息流结果的监听器。
+             */
+            export interface InAppMessageResponseListener {
+                /**
+                 * @en Called to notify when the in-app messaging flow has finished.
+                 * @zh 当应用内消息传递流程完成时调用以通知。
+                 */
+                onInAppMessageResponse(inAppMessageResult: InAppMessageResult): void;
+            }
+            /**
+             * @en
+             * Connection state of billing client.
+             *
+             * @zh
+             * Billing client的连接状态
+             */
+            export enum ConnectionState {
+                /**
+                 * @en
+                 * This client was not yet connected to billing service or was already closed.
+                 *
+                 * @zh
+                 * 此客户端尚未连接到Billing服务或已关闭。
+                 */
+                DISCONNECTED = 0,
+                /**
+                 * @en
+                 * This client is currently in process of connecting to billing service.
+                 *
+                 * @zh
+                 * 此客户端目前正在连接到Billing服务。
+                 */
+                CONNECTING = 1,
+                /**
+                 * @en
+                 * This client is currently connected to billing service.
+                 *
+                 * @zh
+                 * 此客户端当前已连接到Billing服务。
+                 */
+                CONNECTED = 2,
+                /**
+                 * @en
+                 * This client was already closed and shouldn't be used again.
+                 *
+                 * @zh
+                 * 该客户端已关闭，不应再次使用。
+                 */
+                CLOSED = 3
+            }
+            /**
+             * @en
+             * Possible response codes.
+             *
+             * @zh
+             * 可能的响应代码。
+             */
+            export enum BillingResponseCode {
+                /**
+                 * @en
+                 * This field is deprecated.
+                 * See SERVICE_UNAVAILABLE which will be used instead of this code.
+                 *
+                 * @zh
+                 * 这个字段已经废弃。
+                 * 看看SERVICE_UNAVAILABLE将使用哪一个来代替此代码。
+                 */
+                SERVICE_TIMEOUT = -3,
+                /**
+                 * @en
+                 * The requested feature is not supported by the Play Store on the current device.
+                 *
+                 * @zh
+                 * 当前设备上的 Play Store 不支持所请求的功能。
+                 */
+                FEATURE_NOT_SUPPORTED = -2,
+                /**
+                 * @en
+                 * The app is not connected to the Play Store service via the Google Play Billing Library.
+                 *
+                 * @zh
+                 * 该应用未通过 Google Play Billing库连接到 Play Store 服务。
+                 */
+                SERVICE_DISCONNECTED = -1,
+                /**
+                 * @en
+                 * Success.
+                 *
+                 * @zh
+                 * 成功。
+                 */
+                OK = 0,
+                /**
+                 * @en
+                 * Transaction was canceled by the user.
+                 *
+                 * @zh
+                 * 交易已被用户取消。
+                 */
+                USER_CANCELED = 1,
+                /**
+                 * @en
+                 * The service is currently unavailable.
+                 *
+                 * @zh
+                 * 当前设备上的 Play Store 不支持所请求的功能。
+                 */
+                SERVICE_UNAVAILABLE = 2,
+                /**
+                 * @en
+                 * A user billing error occurred during processing.
+                 *
+                 * @zh
+                 * 处理过程中出现用户billing错误。
+                 */
+                BILLING_UNAVAILABLE = 3,
+                /**
+                 * @en
+                 * The requested product is not available for purchase.
+                 *
+                 * @zh
+                 * 所请求的产品无法购买。
+                 */
+                ITEM_UNAVAILABLE = 4,
+                /**
+                 * @en
+                 * Error resulting from incorrect usage of the API.
+                 *
+                 * @zh
+                 * 由于错误使用 API 而导致的错误。
+                 */
+                DEVELOPER_ERROR = 5,
+                /**
+                 * @en
+                 * Fatal error during the API action.
+                 *
+                 * @zh
+                 * API 操作期间发生致命错误。
+                 */
+                ERROR = 6,
+                /**
+                 * @en
+                 * The purchase failed because the item is already owned.
+                 *
+                 * @zh
+                 * 购买失败，因为该物品已被拥有。
+                 */
+                ITEM_ALREADY_OWNED = 7,
+                /**
+                 * @en
+                 * Requested action on the item failed since it is not owned by the user.
+                 *
+                 * @zh
+                 * 由于该项目不属于用户，因此对该项目请求的操作失败。
+                 */
+                ITEM_NOT_OWNED = 8,
+                /**
+                 * @en
+                 * A network error occurred during the operation.
+                 *
+                 * @zh
+                 * 操作期间发生网络错误。
+                 */
+                NETWORK_ERROR = 12
+            }
+            /**
+             * @en
+             * Features/capabilities supported by isFeatureSupported.
+             *
+             * @zh
+             * 支持的特性/能力 isFeatureSupported。
+             */
+            export enum FeatureType {
+                /**
+                 * @en
+                 * Purchase/query for subscriptions.
+                 *
+                 * @zh
+                 * 购买/查询订阅。
+                 */
+                SUBSCRIPTIONS = "subscriptions",
+                /**
+                 * @en
+                 * Subscriptions update/replace.
+                 *
+                 * @zh
+                 * 订阅更新/替换。
+                 */
+                SUBSCRIPTIONS_UPDATE = "subscriptionsUpdate",
+                /**
+                 * @en
+                 * Launch a price change confirmation flow.
+                 *
+                 * @zh
+                 * 启动价格变动确认流程。
+                 */
+                PRICE_CHANGE_CONFIRMATION = "priceChangeConfirmation",
+                /**
+                 * @en
+                 * Show in-app messages.
+                 *
+                 * @zh
+                 * 显示应用内消息。
+                 */
+                IN_APP_MESSAGING = "bbb",
+                /**
+                 * @en
+                 * Play billing library support for querying and purchasing.
+                 *
+                 * @zh
+                 * Play Billing库支持查询、购买。
+                 */
+                PRODUCT_DETAILS = "fff",
+                /**
+                 * @en
+                 * Get billing config.
+                 *
+                 * @zh
+                 * 获取 billing 配置。
+                 */
+                BILLING_CONFIG = "ggg",
+                /**
+                 * @en
+                 * Alternative billing only.
+                 *
+                 * @zh
+                 * 仅限替代Billing。
+                 */
+                ALTERNATIVE_BILLING_ONLY = "jjj",
+                /**
+                 * @en
+                 * Play billing library support for external offer.
+                 *
+                 * @zh
+                 * Play billing库支持外部报价。
+                 */
+                EXTERNAL_OFFER = "kkk"
+            }
+            /**
+             * @en
+             * Supported Product types.
+             *
+             * @zh
+             * 支持的产品类型。
+             */
+            export enum ProductType {
+                /**
+                 * @en
+                 * A Product type for Android apps in-app products.
+                 *
+                 * @zh
+                 * Android 应用内产品的产品类型。
+                 */
+                INAPP = "inapp",
+                /**
+                 * @en
+                 * A Product type for Android apps subscriptions.
+                 *
+                 * @zh
+                 * Android 应用程序订阅的产品类型。
+                 */
+                SUBS = "subs"
+            }
+            /**
+             * @en
+             * A high-level category of the in-app message.
+             * One category can be mapped to multiple in-app messages.
+             *
+             * @zh
+             * 应用程序内信息的高级类别。
+             * 一个类别可映射到多个应用程序内信息。
+             */
+            export enum InAppMessageCategoryId {
+                /**
+                 * @en
+                 * A Product type for Android apps in-app products.
+                 *
+                 * @zh
+                 * 应用程序中未知的消息类别 ID
+                 */
+                UNKNOWN_IN_APP_MESSAGE_CATEGORY_ID = 0,
+                /**
+                 * @en
+                 * The in-app messages of this category are for transactional purpose, such as payment issues.
+                 *
+                 * @zh
+                 * 这类应用内信息用于交易目的，如支付问题。
+                 */
+                TRANSACTIONAL = 2
+            }
+            /**
+             * @en
+             * Supported replacement modes to replace an existing subscription with a new one.
+             *
+             * @zh
+             * 支持替换模式，可将现有订购替换为新订购。
+             */
+            export enum ReplacementMode {
+                /**
+                 * @en
+                 * Unknown replacement mode.
+                 *
+                 * @zh
+                 * 未知替换模式
+                 */
+                UNKNOWN_REPLACEMENT_MODE = 0,
+                /**
+                 * @en
+                 * The new plan takes effect immediately, and the remaining time will be prorated and credited to the user.
+                 *
+                 * @zh
+                 * 新计划立即生效，剩余时间将按比例计入用户贷方。
+                 */
+                WITH_TIME_PRORATION = 1,
+                /**
+                 * @en
+                 * The new plan takes effect immediately, and the billing cycle remains the same.
+                 *
+                 * @zh
+                 * 新计划立即生效，Billing 周期保持不变。
+                 */
+                CHARGE_PRORATED_PRICE = 2,
+                /**
+                 * @en
+                 * The new plan takes effect immediately, and the new price will be charged on next recurrence time.
+                 *
+                 * @zh
+                 * 新计划立即生效，新价格将在下次复诊时收取。
+                 */
+                WITHOUT_PRORATION = 3,
+                /**
+                 * @en
+                 * Replacement takes effect immediately, and the user is charged full price of new plan and
+                 * is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
+                 *
+                 * @zh
+                 * 替换立即生效，用户将被收取新计划的全额费用，并获得一个完整的 Billing 周期，加上旧计划按比例计算的剩余时间。
+                 */
+                CHARGE_FULL_PRICE = 5,
+                /**
+                 * @en
+                 * The new purchase takes effect immediately, the new plan will take effect when the old item expires.
+                 *
+                 * @zh
+                 * 新购买立即生效，新计划将在旧项目到期时生效。
+                 */
+                DEFERRED = 6
+            }
+            /**
+             * @en
+             * Possible response codes.
+             *
+             * @zh
+             * 可能的响应代码。
+             */
+            export enum InAppMessageResponseCode {
+                /**
+                 * @en
+                 * The flow has finished and there is no action needed from developers.
+                 *
+                 * @zh
+                 * 流程已经结束，开发人员无需采取任何行动。
+                 */
+                NO_ACTION_NEEDED = 0,
+                /**
+                 * @en
+                 * The subscription status changed.
+                 *
+                 * @zh
+                 * 订阅状态已更改。
+                 */
+                SUBSCRIPTION_STATUS_UPDATED = 1
+            }
+            /**
+             * @en
+             * Recurrence mode of the pricing phase.
+             *
+             * @zh
+             * 定价阶段的复现模式。
+             */
+            export enum RecurrenceMode {
+                /**
+                 * @en
+                 * The billing plan payment recurs for infinite billing periods unless cancelled.
+                 *
+                 * @zh
+                 * 除非取消，否则billing计划付款将无限期地重复。
+                 */
+                INFINITE_RECURRING = 1,
+                /**
+                 * @en
+                 * The billing plan payment recurs for a fixed number of billing period set in billingCycleCount.
+                 *
+                 * @zh
+                 * Billing计划付款将在 billingCycleCount 中设置的固定 Billing 周期内重复发生。
+                 */
+                FINITE_RECURRING = 2,
+                /**
+                 * @en
+                 * The billing plan payment is a one time charge that does not repeat.
+                 *
+                 * @zh
+                 * Billing计划付款是一次性费用，不会重复。
+                 */
+                NON_RECURRING = 3
+            }
+            /**
+             * @en Params that describe the product to be purchased and the offer to purchase with.
+             * @zh 描述要购买的产品和购买要约的参数。
+             */
+            export class ProductDetailsParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder: () => BillingFlowParams.ProductDetailsParams.Builder;
+            }
+            export interface SubscriptionUpdateParamsBuilder {
+                /**
+                 * @en Specifies the Google Play Billing purchase token that the user is upgrading or downgrading from.
+                 * @zh 指定用户正在升级或降级的 Google Play 结算服务购买令牌。
+                 */
+                setOldPurchaseToken: (purchaseToken: string) => SubscriptionUpdateParamsBuilder;
+                /**
+                 * @en If the originating transaction for the suscription that the user is upgrading or downgrading from was
+                 *     processed via alternative billing, specifies the external transaction id of the originating subscription.
+                 * @zh 如果用户升级或降级的订阅的原始交易是通过替代 Billing 处理的，则指定原始订阅的外部交易 ID。
+                 */
+                setOriginalExternalTransactionId: (externalTransactionId: string) => SubscriptionUpdateParamsBuilder;
+                /**
+                 * @en Specifies the ReplacementMode for replacement.
+                 * @zh 指定ReplacementMode用于替换。
+                 */
+                setSubscriptionReplacementMode: (subscriptionReplacementMode: number) => SubscriptionUpdateParamsBuilder;
+                /**
+                 * @en Construct a ProductDetailsParams.
+                 * @zh 构建一个 SubscriptionUpdateParams 。
+                 */
+                build: () => SubscriptionUpdateParams;
+            }
+            /**
+             * @en Params that describe a subscription update.
+             * @zh 描述订阅更新的参数。
+             */
+            export class SubscriptionUpdateParams {
+                static Builder: SubscriptionUpdateParamsBuilder;
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder: () => SubscriptionUpdateParamsBuilder;
+                static ReplacementMode: typeof google.billing.ReplacementMode;
+            }
+            export class BillingFlowParams {
+                static ProductDetailsParams: typeof google.billing.ProductDetailsParams;
+                static SubscriptionUpdateParams: typeof google.billing.SubscriptionUpdateParams;
+                static Builder: BillingFlowParamsBuilder;
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): BillingFlowParamsBuilder;
+            }
             export namespace BillingFlowParams {
-                export type Builder = __private.__types_jsb__jsb.BillingFlowParamsBuilder;
-                export type SubscriptionUpdateParams = __private.__types_jsb__jsb.SubscriptionUpdateParams;
+                export type Builder = google.billing.BillingFlowParamsBuilder;
+                export type SubscriptionUpdateParams = google.billing.SubscriptionUpdateParams;
                 export namespace SubscriptionUpdateParams {
-                    export type Builder = __private.__types_jsb__jsb.SubscriptionUpdateParamsBuilder;
-                    export type ReplacementMode = __private.__types_jsb__jsb.ReplacementMode;
+                    export type Builder = google.billing.SubscriptionUpdateParamsBuilder;
+                    export type ReplacementMode = google.billing.ReplacementMode;
                 }
-                export type ProductDetailsParams = __private.__types_jsb__jsb.ProductDetailsParams;
+                export type ProductDetailsParams = google.billing.ProductDetailsParams;
                 export namespace ProductDetailsParams {
-                    export type Builder = __private.__types_jsb__jsb.ProductDetailsParamsBuilder;
+                    export interface Builder {
+                        /**
+                         * @en Specifies the identifier of the offer to initiate purchase with.
+                         * @zh 指定用于启动购买的优惠的标识符。
+                         */
+                        setOfferToken: (offerToken: string) => ProductDetailsParams.Builder;
+                        /**
+                         * @en Specifies the details of item to be purchased, fetched via queryProductDetailsAsync.
+                         * @zh 指定要购买的商品的详细信息，通过获取 queryProductDetailsAsync 。
+                         */
+                        setProductDetails: (productDetails: ProductDetails) => ProductDetailsParams.Builder;
+                        /**
+                         * @en Construct a ProductDetailsParams.
+                         * @zh 构建一个 ProductDetailsParams。
+                         */
+                        build: () => ProductDetailsParams;
+                    }
                 }
             }
-            export const ConsumeParams: typeof __private.__types_jsb__jsb.ConsumeParams;
-            export type ConsumeParams = __private.__types_jsb__jsb.ConsumeParams;
+            /**
+             * @en Helps to construct BillingFlowParams that are used to initiate a purchase flow.
+             * @zh 帮助构建 BillingFlowParams 用于启动购买流程的内容。
+             */
+            export interface BillingFlowParamsBuilder {
+                /**
+                 * @en Specifies whether the offer is personalized to the buyer.
+                 * @zh 指定报价是否针对买家进行个性化。
+                 */
+                setIsOfferPersonalized: (isOfferPersonalized: boolean) => BillingFlowParamsBuilder;
+                /**
+                 * @en Specifies an optional obfuscated string that is uniquely associated with the purchaser's user account in your app.
+                 * @zh 指定一个可选的混淆字符串，该字符串与应用中的购买者用户帐户唯一关联。
+                 */
+                setObfuscatedAccountId: (obfuscatedAccountid: string) => BillingFlowParamsBuilder;
+                /**
+                 * @en Specifies an optional obfuscated string that is uniquely associated with the purchaser's user profile in your app.
+                 * @zh 指定一个可选的混淆字符串，该字符串与应用中的购买者的用户资料唯一关联。
+                 */
+                setObfuscatedProfileId: (obfuscatedProfileId: string) => BillingFlowParamsBuilder;
+                /**
+                 * @en Specifies the ProductDetailsParams of the items being purchased.
+                 * @zh 指定所购买商品的 ProductDetailsParams。
+                 */
+                setProductDetailsParamsList: (userChoiceBillingListener: ProductDetailsParams[]) => BillingFlowParamsBuilder;
+                /**
+                 * @en Params used to upgrade or downgrade a subscription.
+                 * @zh 用于升级或降级订阅的参数。
+                 */
+                setSubscriptionUpdateParams: (userChoiceBillingListener: SubscriptionUpdateParams) => BillingFlowParamsBuilder;
+                /**
+                 * @en Returns BillingFlowParams reference to initiate a purchase flow.
+                 * @zh 返回 BillingFlowParams 参考以启动购买流程。
+                 */
+                build: () => BillingFlowParams;
+            }
+            /**
+             * @en Parameters to consume a purchase. See BillingClient#consumeAsync(ConsumeParams, ConsumeResponseListener).
+             * @zh 用于消费购买的参数。请参阅 BillingClient#consumeAsync(ConsumeParams, ConsumeResponseListener)。
+             */
+            export class ConsumeParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): ConsumeParams.Builder;
+            }
             export namespace ConsumeParams {
-                export type Builder = __private.__types_jsb__jsb.ConsumeParamsBuilder;
+                export interface Builder {
+                    /**
+                     * @en Returns token that identifies the purchase to be consumed.
+                     * @zh 返回标识要消费的购买的令牌。
+                     */
+                    setPurchaseToken: (purchaseToken: string) => Builder;
+                    build: () => ConsumeParams;
+                }
             }
-            export const AcknowledgePurchaseParams: typeof __private.__types_jsb__jsb.AcknowledgePurchaseParams;
-            export type AcknowledgePurchaseParams = __private.__types_jsb__jsb.AcknowledgePurchaseParams;
+            /**
+             * @en Parameters to acknowledge a purchase. See acknowledgePurchase.
+             * @zh 确认购买的参数。请参阅 acknowledgePurchase。
+             */
+            export class AcknowledgePurchaseParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): AcknowledgePurchaseParams.Builder;
+            }
             export namespace AcknowledgePurchaseParams {
-                export type Builder = __private.__types_jsb__jsb.AcknowledgePurchaseParamsBuilder;
+                export interface Builder {
+                    /**
+                     * @en Returns token that identifies the purchase to be acknowledged.
+                     * @zh 返回用于标识待确认购买的令牌。
+                     */
+                    setPurchaseToken: (purchaseToken: string) => Builder;
+                    build: () => AcknowledgePurchaseParams;
+                }
             }
-            export const QueryPurchasesParams: typeof __private.__types_jsb__jsb.QueryPurchasesParams;
-            export type QueryPurchasesParams = __private.__types_jsb__jsb.QueryPurchasesParams;
+            /**
+             * @en Parameters to initiate a query for purchases.
+             * @zh 启动购买查询的参数。
+             */
+            export class QueryPurchasesParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): QueryPurchasesParams.Builder;
+            }
             export namespace QueryPurchasesParams {
-                export type Builder = __private.__types_jsb__jsb.QueryPurchasesParamsBuilder;
+                export interface Builder {
+                    /**
+                     * @en Set the ProductType to query purchases.
+                     * @zh 设置 ProductType 来查询购买情况。
+                     */
+                    setProductType: (productType: string) => Builder;
+                    /**
+                     * @en Returns QueryPurchasesParams.
+                     * @zh 返回 QueryPurchasesParams。
+                     */
+                    build: () => QueryPurchasesParams;
+                }
             }
-            export const GetBillingConfigParams: typeof __private.__types_jsb__jsb.GetBillingConfigParams;
-            export type GetBillingConfigParams = __private.__types_jsb__jsb.GetBillingConfigParams;
-            export namespace GetBillingConfigParams {
-                export type Builder = __private.__types_jsb__jsb.GetBillingConfigParams;
+            /**
+             * @en Parameters for in-app messaging. See BillingClient#showInAppMessages.
+             * @zh 应用内消息传递的参数。请参阅 BillingClient#showInAppMessages。
+             */
+            export class InAppMessageParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): InAppMessageParams.Builder;
+                static InAppMessageCategoryId: typeof InAppMessageCategoryId;
             }
-            export const InAppMessageParams: typeof __private.__types_jsb__jsb.InAppMessageParams;
-            export type InAppMessageParams = __private.__types_jsb__jsb.InAppMessageParams;
             export namespace InAppMessageParams {
-                export type Builder = __private.__types_jsb__jsb.InAppMessageParamsBuilder;
-                export type InAppMessageCategoryId = __private.__types_jsb__jsb.InAppMessageCategoryId;
+                export interface Builder {
+                    /**
+                     * @en Adds all in-app message categories to show.
+                     * @zh 添加所有应用内消息类别以显示。
+                     */
+                    addAllInAppMessageCategoriesToShow: () => Builder;
+                    /**
+                     * @en Adds a specific in-app message category to show.
+                     * @zh 添加要显示的特定应用内消息类别。
+                     */
+                    addInAppMessageCategoryToShow: (inAppMessageCategoryId: number) => Builder;
+                    /**
+                     * @en Returns InAppMessageParams.
+                     * @zh 返回 InAppMessageParams。
+                     */
+                    build: () => InAppMessageParams;
+                }
+                export type InAppMessageCategoryId = google.billing.InAppMessageCategoryId;
             }
-            export type AcknowledgePurchaseResponseListener = __private.__types_jsb__jsb.AcknowledgePurchaseResponseListener;
-            export type AlternativeBillingOnlyAvailabilityListener = __private.__types_jsb__jsb.AlternativeBillingOnlyAvailabilityListener;
-            export type AlternativeBillingOnlyInformationDialogListener = __private.__types_jsb__jsb.AlternativeBillingOnlyInformationDialogListener;
-            export type AlternativeBillingOnlyReportingDetailsListener = __private.__types_jsb__jsb.AlternativeBillingOnlyReportingDetailsListener;
-            export type BillingConfigResponseListener = __private.__types_jsb__jsb.BillingConfigResponseListener;
-            export type ConsumeResponseListener = __private.__types_jsb__jsb.ConsumeResponseListener;
-            export type ExternalOfferAvailabilityListener = __private.__types_jsb__jsb.ExternalOfferAvailabilityListener;
-            export type ExternalOfferInformationDialogListener = __private.__types_jsb__jsb.ExternalOfferInformationDialogListener;
-            export type ExternalOfferReportingDetailsListener = __private.__types_jsb__jsb.ExternalOfferReportingDetailsListener;
-            export type InAppMessageResponseListener = __private.__types_jsb__jsb.InAppMessageResponseListener;
-            export type ProductDetailsResponseListener = __private.__types_jsb__jsb.ProductDetailsResponseListener;
-            export type PurchasesResponseListener = __private.__types_jsb__jsb.PurchasesResponseListener;
-            export type PurchasesUpdatedListener = __private.__types_jsb__jsb.PurchasesUpdatedListener;
-            export type UserChoiceBillingListener = __private.__types_jsb__jsb.UserChoiceBillingListener;
-            export type BillingClientStateListener = __private.__types_jsb__jsb.BillingClientStateListener;
-            export type UserChoiceDetails = __private.__types_jsb__jsb.UserChoiceDetails;
-            export type AccountIdentifiers = __private.__types_jsb__jsb.AccountIdentifiers;
-            export type PendingPurchaseUpdate = __private.__types_jsb__jsb.PendingPurchaseUpdate;
-            export type BillingConfig = __private.__types_jsb__jsb.BillingConfig;
-            export type AlternativeBillingOnlyReportingDetails = __private.__types_jsb__jsb.AlternativeBillingOnlyReportingDetails;
-            export type ExternalOfferReportingDetails = __private.__types_jsb__jsb.ExternalOfferReportingDetails;
+            /**
+             * @en Parameters for get billing config flow BillingClient#getBillingConfigAsync.
+             * @zh 获取 billing 配置流程的参数 BillingClient#getBillingConfigAsync。
+             */
+            export class GetBillingConfigParams {
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): GetBillingConfigParams.Builder;
+            }
+            export namespace GetBillingConfigParams {
+                export interface Builder {
+                    /**
+                     * @en Returns GetBillingConfigParams.
+                     * @zh 返回 GetBillingConfigParams
+                     */
+                    build: () => GetBillingConfigParams;
+                }
+            }
+            /**
+             * @en Main interface for communication between the library and user application code.
+             * @zh 库和用户应用程序代码之间通信的主要接口。
+             */
+            export class BillingClient {
+                static Builder: BillingFlowParamsBuilder;
+                static ConnectionState: typeof google.billing.ConnectionState;
+                static BillingResponseCode: typeof google.billing.BillingResponseCode;
+                static FeatureType: typeof google.billing.FeatureType;
+                static ProductType: typeof google.billing.ProductType;
+                /**
+                 * @en Returns an instance of Builder.
+                 * @zh 返回一个 Builder 实例。
+                 */
+                static newBuilder(): BillingClientBuilder;
+                /**
+                 * @en Starts up BillingClient setup process asynchronously.
+                 * @zh 异步启动 BillingClient 设置过程。
+                 */
+                startConnection: (listener: BillingClientStateListener) => void;
+                /**
+                 * @en Closes the connection and releases all held resources such as service connections.
+                 * @zh 关闭连接并释放所有持有的资源，例如服务连接。
+                 */
+                endConnection: () => void;
+                /**
+                 * @en Get the current billing client connection state.
+                 * @zh 获取当前 billing 客户端连接状态。
+                 */
+                getConnectionState: () => number;
+                /**
+                 * @en Checks if the client is currently connected to the service, so that requests to other methods will succeed.
+                 * @zh 检查客户端当前是否连接到服务，以便对其他方法的请求能够成功。
+                 */
+                isReady: () => void;
+                /**
+                 * @en Performs a network query the details of products available for sale in your app.
+                 * @zh 执行网络查询您的应用中可供销售的产品的详细信息。
+                 */
+                queryProductDetailsAsync: (params: QueryProductDetailsParams, listener: ProductDetailsResponseListener) => void;
+                /**
+                 * @en Initiates the billing flow for an in-app purchase or subscription.
+                 * @zh 启动应用内购买或订阅的 Billing 流程。
+                 */
+                launchBillingFlow: (params: BillingFlowParams) => void;
+                /**
+                 * @en Consumes a given in-app product.
+                 * @zh 消费给定的应用内产品。
+                 */
+                consumeAsync: (params: ConsumeParams, listener: ConsumeResponseListener) => void;
+                /**
+                 * @en Acknowledges in-app purchases.
+                 * @zh 确认应用内购买。
+                 */
+                acknowledgePurchase: (params: AcknowledgePurchaseParams, listener: AcknowledgePurchaseResponseListener) => void;
+                /**
+                 * @en Returns purchases details for currently owned items bought within your app.
+                 * @zh 返回您在应用内购买的当前拥有的商品的购买详情。
+                 */
+                queryPurchasesAsync: (params: QueryPurchasesParams, listener: PurchasesResponseListener) => void;
+                /**
+                 * @en Gets the billing config, which stores configuration used to perform billing operations.
+                 * @zh 获取 billing 配置，其中存储用于执行 Billing 操作的配置。
+                 */
+                getBillingConfigAsync: (params: GetBillingConfigParams, listener: BillingConfigResponseListener) => void;
+                /**
+                 * @en Creates alternative billing only purchase details that can be used to report a transaction made via
+                 *     alternative billing without user choice to use Google Play billing.
+                 * @zh 创建仅限替代结算的购买详情，可用于报告通过替代结算进行的交易，而无需用户选择使用 Google Play 结算。
+                 */
+                createAlternativeBillingOnlyReportingDetailsAsync: (listener: AlternativeBillingOnlyReportingDetailsListener) => void;
+                /**
+                 * @en Checks the availability of offering alternative billing without user choice to use Google Play billing.
+                 * @zh 检查是否可以提供无需用户选择使用 Google Play 结算方式的替代结算方式。
+                 */
+                isAlternativeBillingOnlyAvailableAsync: (listener: AlternativeBillingOnlyAvailabilityListener) => void;
+                /**
+                 * @en Creates purchase details that can be used to report a transaction made via external offer.
+                 * @zh 创建可用于报告通过外部报价进行的交易的购买详情。
+                 */
+                createExternalOfferReportingDetailsAsync: (listener: ExternalOfferReportingDetailsListener) => void;
+                /**
+                 * @en Checks the availability of providing external offer.
+                 * @zh 检查提供外部报价的可用性。
+                 */
+                isExternalOfferAvailableAsync: (listener: ExternalOfferAvailabilityListener) => void;
+                /**
+                 * @en Checks if the specified feature or capability is supported by the Play Store.
+                 * @zh 检查 Play 商店是否支持指定的功能或能力。
+                 */
+                isFeatureSupported: (productType: string) => BillingResult;
+                /**
+                 * @en Shows the alternative billing only information dialog on top of the calling app.
+                 * @zh 在调用应用程序顶部显示仅备选 billing 信息对话框。
+                 */
+                showAlternativeBillingOnlyInformationDialog: (listener: AlternativeBillingOnlyInformationDialogListener) => void;
+                /**
+                 * @en Shows the external offer information dialog on top of the calling app.
+                 * @zh 在调用应用程序的顶部显示外部优惠信息对话框。
+                 */
+                showExternalOfferInformationDialog: (listener: ExternalOfferInformationDialogListener) => void;
+                /**
+                 * @en Overlays billing related messages on top of the calling app.
+                 * @zh 在调用应用程序上覆盖与 billing 相关的消息。
+                 */
+                showInAppMessages: (params: InAppMessageParams, listener: InAppMessageResponseListener) => void;
+            }
+            export namespace BillingClient {
+                export type Builder = google.billing.BillingClientBuilder;
+                export type ConnectionState = google.billing.ConnectionState;
+                export type BillingResponseCode = google.billing.BillingResponseCode;
+                export type FeatureType = google.billing.FeatureType;
+                export type ProductType = google.billing.ProductType;
+            }
         }
         export namespace play {
-            export const PlayGamesSdk: typeof __private.__types_jsb__jsb.PlayGamesSdk;
-            export type PlayGamesSdk = __private.__types_jsb__jsb.PlayGamesSdk;
-            export const PlayGames: typeof __private._vendor_google_play_games__PlayGamesHelper;
-            export const GamesSignInClient: typeof __private._vendor_google_play_games__GamesSignInClientHelper;
-            export const AuthenticationResult: typeof __private.__types_jsb__jsb.AuthenticationResult;
-            export type AuthenticationResult = __private.__types_jsb__jsb.AuthenticationResult;
-            export const RecallAccess: typeof __private.__types_jsb__jsb.RecallAccess;
-            export type RecallAccess = __private.__types_jsb__jsb.RecallAccess;
-            export const PlayException: typeof __private.__types_jsb__jsb.PlayException;
-            export type PlayException = __private.__types_jsb__jsb.PlayException;
-            export const AnnotatedData: typeof __private.__types_jsb__jsb.AnnotatedData;
-            export type AnnotatedData = __private.__types_jsb__jsb.AnnotatedData;
-            export const AchievementBuffer: typeof __private.__types_jsb__jsb.AchievementBuffer;
-            export type AchievementBuffer = __private.__types_jsb__jsb.AchievementBuffer;
-            export const Achievement: typeof __private.__types_jsb__jsb.Achievement;
-            export type Achievement = __private.__types_jsb__jsb.Achievement;
+            /**
+             * @en Represents the current authentication status with Play Games Services.
+             * @zh 代表 Play Games Services 的当前身份验证状态。
+             */
+            export class AuthenticationResult {
+                /**
+                 * @en Returns true if your game is authenticated to Play Games Services.
+                 * @zh 返回true表示您的游戏已通过 Play Games Services 的身份验证。
+                 */
+                isAuthenticated(): boolean;
+            }
+            /**
+             * @en Contains the result of RecallClient.requestRecallAccess().
+             * @zh 包含 RecallClient.requestRecallAccess() 的返回结果
+             */
+            export class RecallAccess {
+                /**
+                 * @en Hash code
+                 * @zh hash 值。
+                 */
+                hashCode(): number;
+                /**
+                 * @en Returns the session id to be passed into PGS server API.
+                 * @zh 返回要传递到 PGS server API 的会话 ID。
+                 */
+                getSessionId(): string;
+                /**
+                 * @en Is it equal to another RecallAccess.
+                 * @zh 判断与另一个 RecallAccess 是否相等。
+                 */
+                equals(other: RecallAccess): boolean;
+            }
+            export class PlayException {
+                /**
+                 * @en Getting Exception message.
+                 * @zh 获取异常信息。
+                 */
+                getMessage(): string;
+                /**
+                 * @en Returns the name of the exception in the local language of the user (Chinese etc.).
+                 * @zh 用户的本地语言（中文等）返回异常名称。
+                 */
+                getLocalizedMessage(): string;
+                /**
+                 * @en Print the exception stack.
+                 * @zh 打印异常堆栈。
+                 */
+                printStackTrace(): void;
+                /**
+                 * @en To string.
+                 * @zh 转换成字符串。
+                 */
+                toString(): string;
+            }
+            /**
+             * @en Data interface for retrieving achievement information.
+             * @zh 用于检索成就信息的数据接口。
+             */
+            export class Achievement {
+                /**
+                 * @en Constant returned by getState() indicating an unlocked achievement.
+                 * @zh getState 返回的常量表示未解锁的成就。
+                 */
+                static STATE_UNLOCKED: number;
+                /**
+                 * @en Constant returned by getState() indicating a revealed achievement.
+                 * @zh getState 返回的常量表示已显示的成就。
+                 */
+                static STATE_REVEALED: number;
+                /**
+                 * @en Constant returned by getState() indicating a hidden achievement.
+                 * @zh getState 返回的常量表示隐藏的成就。
+                 */
+                static STATE_HIDDEN: number;
+                /**
+                 * @en Constant returned by getType() indicating a standard achievement.
+                 * @zh getType 返回的常量表示标准的成就。
+                 */
+                static TYPE_STANDARD: number;
+                /**
+                 * @en Constant returned by getType() indicating an incremental achievement.
+                 * @zh getType 返回的常量表示增量的成就。
+                 */
+                static TYPE_INCREMENTAL: number;
+                /**
+                 * @en Retrieves the number of steps this user has gone toward unlocking this achievement;
+                 *     only applicable for TYPE_INCREMENTAL achievement types.
+                 * @zh 检索该用户为解锁该成就所走的步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+                 */
+                getCurrentSteps(): number;
+                /**
+                 * @en Returns the Achievement.AchievementState of the achievement.
+                 * @zh 返回该成就的状态（Achievement.AchievementState）。
+                 */
+                getState(): number;
+                /**
+                 * @en Retrieves the total number of steps necessary to unlock this achievement; only applicable for TYPE_INCREMENTAL achievement types
+                 * @zh 检索解锁此成就所需的总步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+                 */
+                getTotalSteps(): number;
+                /**
+                 * @en Returns the Achievement.AchievementType of this achievement.
+                 * @zh 返回此成就的 Achievement.AchievementType。
+                 */
+                getType(): number;
+                /**
+                 * @en Retrieves the timestamp (in millseconds since epoch) at which this achievement was last updated.
+                 * @zh 检索此成就最后更新的时间戳（以纪元以来的毫秒数为单位）。
+                 */
+                getLastUpdatedTimestamp(): number;
+                /**
+                 * @en Retrieves the XP value of this achievement.
+                 * @zh 检索此成就的 XP 值。
+                 */
+                getXpValue(): number;
+                /**
+                 * @en Retrieves the ID of this achievement.
+                 * @zh 检索此成就的 ID。
+                 */
+                getAchievementId(): string;
+                /**
+                 * @en Retrieves the description for this achievement.
+                 * @zh 检索此成就的描述。
+                 */
+                getDescription(): string;
+                /**
+                 * @enRetrieves the number of steps this user has gone toward unlocking this achievement
+                 *              (formatted for the user's locale); only applicable for TYPE_INCREMENTAL achievement types.
+                 * @zh 检索该用户为解锁此成就所经过的步数（根据用户的语言环境格式化）；仅适用于 TYPE_INCREMENTAL成就类型。
+                 */
+                getFormattedCurrentSteps(): string;
+                /**
+                 * @en Loads the total number of steps necessary to unlock this achievement
+                 *     (formatted for the user's locale) into the given CharArrayBuffer; only applicable for TYPE_INCREMENTAL achievement types.
+                 * @zh 检索解锁此成就所需的总步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+                 */
+                getFormattedTotalSteps(): string;
+                /**
+                 * @en Retrieves the name of this achievement.
+                 * @zh 检索此成就的名称。
+                 */
+                getName(): string;
+                /**
+                 * @en Retrieves a URI that can be used to load the achievement's revealed image icon.
+                 * @zh 检索一个URI，该URI可用于加载成就的显示图像图标。
+                 */
+                getRevealedImageUrl(): string;
+                /**
+                 * @en Retrieves a URI that can be used to load the achievement's unlocked image icon.
+                 * @zh 检索可用于加载成就的解锁图像图标的 URI。
+                 */
+                getUnlockedImageUrl(): string;
+            }
+            /**
+             * @en Data structure providing access to a list of achievements.
+             * @zh 提供访问成就列表的数据结构。
+             */
+            export class AchievementBuffer {
+                /**
+                 * @en Get the count of achievement.
+                 * @zh 获取 achievement 的数量 。
+                 */
+                getCount(): number;
+                /**
+                 * @en Get the item at the specified position.
+                 * @zh 获取指定位置的 Achievement。
+                 */
+                get(i: number): Achievement;
+                /**
+                 * @en Releases the data buffer, for use in try-with-resources.
+                 * @zh 释放数据缓冲区，以供在 try-with-resources 中使用。
+                 */
+                close(): void;
+                /**
+                 * @en Releases resources used by the buffer.
+                 * @zh 释放缓冲区使用的资源。
+                 */
+                release(): void;
+            }
+            /**
+             * @en Class to return annotated data. Currently, the only annotation is whether the data is stale or not.
+             * @zh 用于返回带 annotated 数据的类。目前，唯一的 annotated 数据是否过时。
+             */
+            export class AnnotatedData {
+                /**
+                 * @en Returns true if the data returned by get() is stale.
+                 * @zh 如果 get() 返回的数据已过时，则返回 true。
+                 */
+                isStale(): boolean;
+                /**
+                 * @en Returns the data that is annotated by this class.
+                 * @zh 返回该类的 annotated 数据。
+                 */
+                get(): AchievementBuffer;
+            }
+            /**
+             * @en Entry point for the Play Games SDK.
+             * @zh Play Games SDK 的入口点。
+             */
+            export class PlayGamesSdk {
+                /**
+                 * @en Initializes the Play Games SDK using the Game services application id defined in the application's manifest.
+                 * @zh 使用应用程序清单中定义的游戏服务应用程序 ID 初始化 Play 游戏 SDK。
+                 */
+                static initialize(): void;
+            }
+            /**
+             * @en Main entry point for the Games APIs. This class provides APIs and interfaces to access the Google Play Games Services functionality.
+             * @zh 游戏 API 的主要入口点。此类提供用于访问 Google Play Games Services 功能的 API 和接口。
+             */
+            export class PlayGames {
+                /**
+                 * @en Returns a new instance of AchievementsClient.
+                 * @zh 返回一个新的 AchievementsClient 实例。
+                 */
+                static getAchievementsClient(): AchievementsClient;
+                /**
+                 * @en Returns a new instance of GamesSignInClient.
+                 * @zh 返回一个新的 GamesSignInClient 实例。
+                 */
+                static getGamesSignInClient(): GamesSignInClient;
+                /**
+                 * @en Returns a new instance of RecallClient.
+                 * @zh 返回一个新的 RecallClient 实例。
+                 */
+                static getRecallClient(): RecallClient;
+            }
+            /**
+             * @en A client for performing sign-in with Play Games Services.
+             * @zh 用于使用 Play Games Services 执行登录的客户端。
+             */
+            export class GamesSignInClient {
+                /**
+                 * @en Returns the current authentication status via an AuthenticationResult.
+                 * @zh 通过 AuthenticationResult 返回当前身份验证状态。
+                 */
+                isAuthenticated(): __private._vendor_google_play_task__TaskHelper<google.play.AuthenticationResult>;
+                /**
+                 * @en Requests server-side access to Play Games Services for the currently signed-in player.
+                 * @zh 向当前登录的玩家请求服务器端访问 Play Games Services。
+                 */
+                requestServerSideAccess(serverClientId: string, forceRefreshToken: boolean): __private._vendor_google_play_task__TaskHelper<string>;
+                /**
+                 * @en Manually requests that your game sign in with Play Games Services.
+                 * @zh 手动请求您的游戏通过 Play Games Services 登录。
+                 */
+                signIn(): __private._vendor_google_play_task__TaskHelper<google.play.AuthenticationResult>;
+            }
+            /**
+             * @en A client to interact with achievements functionality.
+             * @zh 与 Achievements 功能交互的客户端。
+             */
+            export class AchievementsClient {
+                /**
+                 * @en Show default achievement page.
+                 * @zh 显示默认的成就页面。
+                 */
+                showAchievements(): void;
+                /**
+                 * @en Returns a Task which asynchronously increments an achievement by the given number of steps.
+                 * @zh 返回一个 Task 以给定步数异步增加成就的方法。
+                 */
+                incrementImmediate(id: string, numSteps: number): __private._vendor_google_play_task__TaskHelper<boolean>;
+                /**
+                 * @en Returns a Task which asynchronously loads an annotated AchievementBuffer that represents the achievement data.
+                 *     for the currently signed-in player.
+                 * @zh 返回一个 Task，该任务异步加载带 annotated 的 AchievementBuffer，该缓冲区代表当前登录玩家的成就数据。
+                 */
+                load(forceReload: boolean): __private._vendor_google_play_task__TaskHelper<google.play.AnnotatedData>;
+                /**
+                 * @en Returns a Task which asynchronously reveals a hidden achievement to the currently signed in player.
+                 * @zh 返回一个 Task 异步向当前登录的玩家显示隐藏成就的对象。
+                 */
+                revealImmediate(id: string): __private._vendor_google_play_task__TaskHelper<void>;
+                /**
+                 * @en Returns a Task which asynchronously sets an achievement to have at least the given number of steps completed.
+                 * @zh 返回一个 Task 异步设置成就以至少完成给定数量的步骤。
+                 */
+                setStepsImmediate(id: string, numSteps: number): __private._vendor_google_play_task__TaskHelper<boolean>;
+                /**
+                 * @en Returns a Task which asynchronously unlocks an achievement for the currently signed in player.
+                 * @zh 返回一个 Task 异步解锁当前登录玩家的成就。
+                 */
+                unlockImmediate(id: string): __private._vendor_google_play_task__TaskHelper<void>;
+                /**
+                 * @en Increments an achievement by the given number of steps.
+                 * @zh 按给定的步数增加成就。
+                 */
+                increment(id: string, numSteps: number): void;
+                /**
+                 * @en Reveals a hidden achievement to the currently signed-in player.
+                 * @zh 向当前登录的玩家揭示隐藏的成就。
+                 */
+                reveal(id: string): void;
+                /**
+                 * @en Sets an achievement to have at least the given number of steps completed.
+                 * @zh 设置一项成就，至少完成给定数量的步骤。
+                 */
+                setSteps(id: string, numSteps: number): void;
+                /**
+                 * @en Unlocks an achievement for the currently signed in player.
+                 * @zh 为当前登录的玩家解锁一项成就。
+                 */
+                unlock(id: string): void;
+            }
+            /**
+             * @en A client for the recall functionality.
+             * @zh Recall 功能客户端。
+             */
+            export class RecallClientHelper {
+                /**
+                 * @en Returns a RecallAccess to use for server-to-server communication between the 3p game server and Play Games Services server.
+                 * @zh 返回 RecallAccess 用于第三方游戏服务器和 Play 游戏服务服务器之间的服务器到服务器通信。
+                 */
+                requestRecallAccess(): __private._vendor_google_play_task__TaskHelper<google.play.RecallAccess>;
+            }
+            export type RecallClient = RecallClientHelper;
             export type Continuation<T, K = void> = __private._vendor_google_play_task__ContinuationHelper<T, K>;
             export type Task<T, K = void> = __private._vendor_google_play_task__TaskHelper<T, K>;
         }
@@ -61337,6 +63167,11 @@ declare module "cc" {
              */
             get isCompressed(): boolean;
             /**
+             * @en Whether it is a compressed alpha channel texture
+             * @zh 是否为压缩的透明通道贴图
+             */
+            get isAlphaAtlas(): boolean;
+            /**
              * @en Pixel width of the texture.
              * @zh 此贴图的像素宽度。
              */
@@ -61780,43 +63615,47 @@ declare module "cc" {
             DYNAMIC = 1,
             CROSSED = 2
         }
+        export enum _cocos_2d_renderer_render_entity__RenderEntityFillColorType {
+            COLOR = 0,
+            VERTEX = 1
+        }
         /** @mangle */
         export class _cocos_2d_renderer_render_entity__RenderEntity {
             protected _node: Node | null;
             protected _renderTransform: Node | null;
             protected _stencilStage: _cocos_2d_renderer_stencil_manager__Stage;
+            protected _colorDirty: boolean;
+            protected _enabled: boolean;
             protected _useLocal: boolean;
             protected _maskMode: _cocos_2d_renderer_render_entity__MaskMode;
-            protected _floatSharedBuffer: Float32Array;
+            protected _uint32SharedBuffer: Uint32Array;
             protected _uint8SharedBuffer: Uint8Array;
             protected _boolSharedBuffer: Uint8Array;
             get nativeObj(): _cocos_2d_renderer_native_2d__NativeRenderEntity;
             get renderDrawInfoArr(): _cocos_2d_renderer_render_draw_info__RenderDrawInfo[];
             get renderEntityType(): _cocos_2d_renderer_render_entity__RenderEntityType;
+            setPriority(val: number): void;
             protected _color: math.Color;
             get color(): math.Color;
             set color(val: math.Color);
-            protected _localOpacity: number;
-            get localOpacity(): number;
-            set localOpacity(val: number);
-            protected _colorDirty: boolean;
             get colorDirty(): boolean;
             set colorDirty(val: boolean);
-            protected _enabled: boolean;
             get enabled(): boolean;
             set enabled(val: boolean);
+            setUseLocal(useLocal: boolean): void;
             constructor(entityType: _cocos_2d_renderer_render_entity__RenderEntityType);
             addDynamicRenderDrawInfo(renderDrawInfo: _cocos_2d_renderer_render_draw_info__RenderDrawInfo | null): void;
             removeDynamicRenderDrawInfo(): void;
             clearDynamicRenderDrawInfos(): void;
             clearStaticRenderDrawInfos(): void;
+            clearRenderDrawInfos(): void;
             setDynamicRenderDrawInfo(renderDrawInfo: _cocos_2d_renderer_render_draw_info__RenderDrawInfo | null, index: number): void;
             setMaskMode(mode: _cocos_2d_renderer_render_entity__MaskMode): void;
+            setFillColorType(fillColorType: _cocos_2d_renderer_render_entity__RenderEntityFillColorType): void;
             getStaticRenderDrawInfo(): _cocos_2d_renderer_render_draw_info__RenderDrawInfo | null;
             setNode(node: Node | null): void;
             setRenderTransform(renderTransform: Node | null): void;
             setStencilStage(stage: _cocos_2d_renderer_stencil_manager__Stage): void;
-            setUseLocal(useLocal: boolean): void;
         }
         export enum _cocos_2d_framework_sprite_renderer__SpriteMode {
             SIMPLE = 0,
@@ -62156,6 +63995,7 @@ declare module "cc" {
             syncMeshBuffersToNative(accId: number, buffers: _cocos_2d_renderer_native_2d__NativeUIMeshBuffer[]): any;
             update(): any;
             uploadBuffers(): any;
+            setSorting2DCount(count: number): any;
             reset(): any;
             syncRootNodesToNative(nodes: Node[]): any;
             releaseDescriptorSetCache(texture: gfx.Texture, sampler: gfx.Sampler): any;
@@ -63644,7 +65484,7 @@ declare module "cc" {
             var update: <T extends object>(obj: T) => T;
             var isEnum: <EnumT extends object>(enumType: EnumT) => boolean;
             var getList: <EnumT extends object>(enumType: EnumT) => readonly _cocos_core_value_types_enum__Enum.Enumerator<EnumT>[];
-            var sortList: <EnumT extends object>(enumType: EnumT, compareFn: (a: any, b: any) => number) => void;
+            var sortList: <EnumT extends object>(enumType: EnumT, compareFn: (a: _cocos_core_value_types_enum__Enum.Enumerator<EnumT>, b: _cocos_core_value_types_enum__Enum.Enumerator<EnumT>) => number) => void;
         }
         export namespace _cocos_core_value_types_enum__Enum {
             interface Enumerator<EnumT> {
@@ -66104,6 +67944,7 @@ declare module "cc" {
              *
              */
             unpackJson(pack: string[], json: any, options: Record<string, any>, onComplete: ((err: Error | null, data?: Record<string, any> | null) => void)): void;
+            unpackBin(pack: string[], buffer: ArrayBuffer, options: Record<string, any>, onComplete: ((err: Error | null, data?: Record<string, any> | null) => void)): void;
             init(): void;
             /**
              * @en
@@ -71558,12 +73399,8 @@ declare module "cc" {
              * 如果目标不存在，将为这一目标创建一个新的实例，并将动作添加进去。<br/>
              * 当目标状态的 paused 为 true，动作将不会被执行
              *
-             * @method addAction
-             * @param {Action} action
-             * @param {object} target
-             * @param {Boolean} paused
              */
-            addAction<T>(action: _cocos_tween_actions_action__Action | null, target: T, paused: boolean): void;
+            addAction<T>(action: _cocos_tween_actions_action__Action | null, target: T, paused: boolean, isBindNodeState?: boolean): void;
             /**
              * @en Removes all actions from all the targets.
              * @zh 移除所有对象的所有动作。
@@ -72609,38 +74446,35 @@ declare module "cc" {
              */
             _buildResult(containerW: number, containerH: number, contentW: number, contentH: number, scaleX: number, scaleY: number): _cocos_ui_view__AdaptResult;
         }
-        /**
-         * @en
-         * Recurrence mode of the pricing phase.
-         *
-         * @zh
-         * 定价阶段的复现模式。
-         */
-        export enum __types_jsb_jsb__RecurrenceMode {
-            /**
-             * @en
-             * The billing plan payment recurs for infinite billing periods unless cancelled.
-             *
-             * @zh
-             * 除非取消，否则billing计划付款将无限期地重复。
-             */
-            INFINITE_RECURRING = 1,
-            /**
-             * @en
-             * The billing plan payment recurs for a fixed number of billing period set in billingCycleCount.
-             *
-             * @zh
-             * Billing计划付款将在 billingCycleCount 中设置的固定计费周期内重复发生。
-             */
-            FINITE_RECURRING = 2,
-            /**
-             * @en
-             * The billing plan payment is a one time charge that does not repeat.
-             *
-             * @zh
-             * Billing计划付款是一次性费用，不会重复。
-             */
-            NON_RECURRING = 3
+        /// <reference types="./@types/jsb" />
+        /****************************************************************************
+         Copyright (c) 2025 Xiamen Yaji Software Co., Ltd.
+        
+         http://www.cocos.com
+        
+         Permission is hereby granted, free of charge, to any person obtaining a copy
+         of this software and associated documentation files (the "Software"), to deal
+         in the Software without restriction, including without limitation the rights to
+         use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+         of the Software, and to permit persons to whom the Software is furnished to do so,
+         subject to the following conditions:
+        
+         The above copyright notice and this permission notice shall be included in
+         all copies or substantial portions of the Software.
+        
+         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+         IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+         FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+         AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+         LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+         THE SOFTWARE.
+         *****************************************************************************/
+        export interface _vendor_google_play_task__OnCanceledListener {
+            onCanceled(): void;
+        }
+        export interface _vendor_google_play_task__OnCompleteListener<TResult, TContinuationResult = void> {
+            onComplete(result: _vendor_google_play_task__TaskHelper<TResult, TContinuationResult>): void;
         }
         export type __types_jsb_jsb__AccelerationXYZ = number;
         export type __types_jsb_jsb__AccelerationIncludingGravityXYZ = number;
@@ -72760,6 +74594,7 @@ declare module "cc" {
             static UPDATE_FINISHED: number;
             static UPDATE_FAILED: number;
             static ERROR_DECOMPRESS: number;
+            static DOWNLOAD_MANIFEST: number;
             constructor(eventName: string, manager: __types_jsb_jsb__AssetsManager, eventCode: number, assetId?: string, message?: string, curleCode?: number, curlmCode?: number);
             getAssetsManagerEx(): __types_jsb_jsb__AssetsManager;
             isResuming(): boolean;
@@ -72804,6 +74639,7 @@ declare module "cc" {
             prepareUpdate(): void;
             update(): void;
             isResuming(): boolean;
+            cancelUpdate(): void;
             getDownloadedFiles(): number;
             getDownloadedBytes(): number;
             getTotalFiles(): number;
@@ -72827,930 +74663,343 @@ declare module "cc" {
             setVerifyCallback(verifyCallback: (path: string, asset: __types_jsb_jsb__ManifestAsset) => boolean): void;
             setEventCallback(eventCallback: (event: __types_jsb_jsb__EventAssetsManager) => void): void;
         }
-        export interface __types_jsb_jsb__UserChoiceDetailsProduct {
-            hashCode(): number;
-            getId(): string;
-            getOfferToken(): string;
-            getType(): string;
+        export class __types_jsb_jsb__PlayException {
+            /**
+             * @en Getting Exception message.
+             * @zh 获取异常信息。
+             */
+            getMessage(): string;
+            /**
+             * @en Returns the name of the exception in the local language of the user (Chinese etc.).
+             * @zh 用户的本地语言（中文等）返回异常名称。
+             */
+            getLocalizedMessage(): string;
+            /**
+             * @en Print the exception stack.
+             * @zh 打印异常堆栈。
+             */
+            printStackTrace(): void;
+            /**
+             * @en To string.
+             * @zh 转换成字符串。
+             */
             toString(): string;
-            equals(product: __types_jsb_jsb__UserChoiceDetailsProduct): boolean;
+        }
+        export interface __types_jsb_jsb__OnCanceledListener {
+            /**
+             * @en Called when the Task is canceled successfully.
+             * @zh 当任务成功取消时调用。
+             */
+            onCanceled(): void;
+        }
+        export interface __types_jsb_jsb__OnCompleteListener {
+            /**
+             * @en Called when the Task completes.
+             * @zh 任务完成时调用。
+             */
+            onComplete(task: any): void;
+        }
+        export interface __types_jsb_jsb__OnFailureListener {
+            /**
+             * @en Called when the Task fails with an exception.
+             * @zh 当任务因异常而失败时调用。
+             */
+            onFailure(e: __types_jsb_jsb__PlayException): void;
+        }
+        export interface __types_jsb_jsb__OnSuccessListener {
+            /**
+             * @en Called when the Task completes successfully.
+             * @zh 成功完成时调用 Task 。
+             */
+            onSuccess(result: any): void;
+        }
+        export interface __types_jsb_jsb__OnContinueWithListener {
+            /**
+             * @en Returns the result of applying this Continuation to task.
+             * @zh 返回将此 Continuation 应用到 的结果 task 。
+             */
+            then(result: any): void;
+        }
+        export class __types_jsb_jsb__PlayTask {
+            /**
+             * @en Adds a listener that is called if the Task is canceled.
+             * @zh 添加一个侦听器，当任务被取消时调用该侦听器。
+             */
+            public addOnCanceledListener(listener: __types_jsb_jsb__OnCanceledListener): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Adds a listener that is called when the Task completes.
+             * @zh 添加在任务完成时调用的监听器。
+             */
+            public addOnCompleteListener(listener: __types_jsb_jsb__OnCompleteListener): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Adds a listener that is called if the Task fails.
+             * @zh 添加一个在任务失败时调用的监听器。
+             */
+            public addOnFailureListener(listener: __types_jsb_jsb__OnFailureListener): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Adds a listener that is called if the Task completes successfully.
+             * @zh 添加一个侦听器，当任务成功完成时调用该侦听器。
+             */
+            public addOnSuccessListener(listener: __types_jsb_jsb__OnSuccessListener): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Returns a new Task that will be completed with the result of applying the specified Continuation to this Task.
+             * @zh 返回一个新任务，该任务将通过将指定的延续应用于此任务的结果来完成。
+             */
+            public continueWith(listener: __types_jsb_jsb__OnContinueWithListener): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Gets the result of the Task, if it has already completed.
+             * @zh 如果任务已经完成，则获取任务的结果。
+             */
+            public getResult(listener: __types_jsb_jsb__OnSuccessListener): any;
+            /**
+             * @en Returns true if the Task is canceled; false otherwise.
+             * @zh true 如果任务被取消则返回；false 否则返回。
+             */
+            public isCanceled(): boolean;
+            /**
+             * @en Returns true if the Task is complete; false otherwise.
+             * @zh true 如果任务完成则返回；false 否则返回。
+             */
+            public isComplete(): boolean;
+            /**
+             * @en Returns true if the Task has completed successfully; false otherwise.
+             * @zh true 如果任务已成功完成则返回；false 否则返回。
+             */
+            public isSuccessful(): boolean;
         }
         /**
-         * @en Represents a pricing phase, describing how a user pays at a point in time.
-         * @zh 表示定价阶段，描述用户在某个时间点如何付款。
+         * @en Contains the result of RecallClient.requestRecallAccess().
+         * @zh 包含 RecallClient.requestRecallAccess() 的返回结果
          */
-        export interface __types_jsb_jsb__PricingPhase {
-            /**
-             * @en Number of cycles for which the billing period is applied.
-             * @zh 计费周期适用的周期数。
-             */
-            getBillingCycleCount(): number;
-            /**
-             * @en The price for the payment cycle in micro-units, where 1,000,000 micro-units equal one unit of the currency.
-             * @zh 微单位付款周期的价格，其中 1,000,000 个微单位等于 1 个货币单位。
-             */
-            getPriceAmountMicros(): number;
-            /**
-             * @en RecurrenceMode for the pricing phase.
-             * @zh 定价阶段的RecurrenceMode。
-             */
-            getRecurrenceMode(): number;
-            /**
-             * @en Billing period for which the given price applies, specified in ISO 8601 format.
-             * @zh 给定价格适用的计费期，以 ISO 8601 格式指定。
-             */
-            getBillingPeriod(): string;
-            /**
-             * @en Formatted price for the payment cycle, including its currency sign.
-             * @zh 付款周期的格式化价格，包括其货币符号。
-             */
-            getFormattedPrice(): string;
-            /**
-             * @en Returns ISO 4217 currency code for price.
-             * @zh 返回价格的 ISO 4217 货币代码。
-             */
-            getPriceCurrencyCode(): string;
-        }
-        /**
-         * @en Represents a pricing phase, describing how a user pays at a point in time.
-         * @zh 表示定价阶段，描述用户在某个时间点如何付款。
-         */
-        export interface __types_jsb_jsb__PricingPhases {
-            /**
-             * @en Returns ISO 4217 currency code for price.
-             * @zh 返回价格的 ISO 4217 货币代码。
-             */
-            getPricingPhaseList(): __types_jsb_jsb__PricingPhase[];
-        }
-        /**
-         * @en Represents additional details of an installment subscription plan.
-         * @zh 表示分期付款订阅计划的附加详细信息。
-         */
-        export interface __types_jsb_jsb__InstallmentPlanDetails {
-            /**
-             * @en Committed payments count after a user signs up for this subscription plan.
-             * @zh 用户注册此订阅计划后承诺的付款数量。
-             */
-            getInstallmentPlanCommitmentPaymentsCount(): number;
-            /**
-             * @en Subsequent committed payments count after this subscription plan renews.
-             * @zh 此订阅计划续订后的后续承诺付款数量。
-             */
-            getSubsequentInstallmentPlanCommitmentPaymentsCount(): number;
-        }
-        /**
-         * @en Represents the offer details to buy an one-time purchase product.
-         * @zh 代表一次性购买产品的报价详情。
-         */
-        export interface __types_jsb_jsb__OneTimePurchaseOfferDetails {
-            /**
-             * @en The price for the payment in micro-units, where 1,000,000 micro-units equal one unit of the currency.
-             * @zh 以微单位返回支付价格，其中 1,000,000 个微单位等于 1 个货币单位。
-             */
-            getPriceAmountMicros(): number;
-            /**
-             * @en Formatted price for the payment, including its currency sign.
-             * @zh 支付的格式化价格，包括其货币单位。
-             */
-            getFormattedPrice(): string;
-            /**
-             * @en ISO 4217 currency code for price.
-             * @zh 价格的 ISO 4217 货币代码。
-             */
-            getPriceCurrencyCode(): string;
-        }
-        /**
-         * @en Represents the available purchase plans to buy a subscription product.
-         * @zh 代表一次性购买产品的报价详情。
-         */
-        export interface __types_jsb_jsb__SubscriptionOfferDetails {
-            /**
-             * @en The base plan id associated with the subscription product.
-             * @zh 与订阅产品相关的基本计划 ID。
-             */
-            getBasePlanId(): string;
-            /**
-             * @en The offer id associated with the subscription product.
-             * @zh 与订阅产品相关的优惠 ID。
-             */
-            getOfferId(): string;
-            /**
-             * @en The offer tags associated with this Subscription Offer.
-             * @zh 与此订阅优惠相关的优惠标签。
-             */
-            getOfferTags(): string[];
-            /**
-             * @en The offer token required to pass in launchBillingFlow to purchase the subscription product with these pricing phases.
-             * @zh 在 launchBillingFlow 中传递以使用这些定价阶段购买订阅产品所需的优惠令牌。
-             */
-            getOfferToken(): string;
-            /**
-             * @en The pricing phases for the subscription product.
-             * @zh 订阅产品的定价区间。
-             */
-            getPricingPhases(): __types_jsb_jsb__PricingPhases;
-            /**
-             * @en The additional details of an installment plan.
-             * @zh 分期付款计划的附加详细信息。
-             */
-            getInstallmentPlanDetails(): __types_jsb_jsb__InstallmentPlanDetails;
-        }
-        /**
-         * @en
-         * Possible purchase states.
-         *
-         * @zh
-         * 可能的购买状态。
-         */
-        export enum __types_jsb_jsb__PurchaseState {
-            /**
-             * @en
-             * Purchase is pending and not yet completed to be processed by your app.
-             *
-             * @zh
-             * 购买处于待处理状态且尚未完成，无法由您的应用程序处理。
-             */
-            PENDING = 2,
-            /**
-             * @en
-             * Purchase is completed..
-             *
-             * @zh
-             * 购买完成。
-             */
-            PURCHASED = 1,
-            /**
-             * @en
-             * Purchase with unknown state.
-             *
-             * @zh
-             * 未知状态
-             */
-            UNSPECIFIED_STATE = 0
-        }
-        /**
-         * @en Account identifiers that were specified when the purchase was made.
-         * @zh 购买时指定的帐户标识符。
-         */
-        export interface __types_jsb_jsb__AccountIdentifiers {
-            /**
-             * @en The obfuscated account id specified in setObfuscatedAccountId.
-             * @zh 在setObfuscatedAccountId中设置的混淆账户id
-             */
-            getObfuscatedAccountId(): string;
-            /**
-             * @en The obfuscated profile id specified in setObfuscatedProfileId.
-             * @zh 在setObfuscatedProfileId中设置的混淆profile id
-             */
-            getObfuscatedProfileId(): string;
-        }
-        /**
-         * @en Represents a pending change/update to the existing purchase.
-         * @zh 表示对现有购买的待定更改/更新。
-         */
-        export interface __types_jsb_jsb__PendingPurchaseUpdate {
-            /**
-             * @en A token that uniquely identifies this pending transaction.
-             * @zh 唯一标识此待处理交易的令牌。
-             */
-            getPurchaseToken(): string;
-            /**
-             * @en The product ids.
-             * @zh 产品 ID。
-             */
-            getProducts(): string[];
-        }
-        /**
-         * @en
-         * Possible response codes.
-         *
-         * @zh
-         * 可能的响应代码。
-         */
-        export enum __types_jsb_jsb__InAppMessageResponseCode {
-            /**
-             * @en
-             * The flow has finished and there is no action needed from developers.
-             *
-             * @zh
-             * 流程已经结束，开发人员无需采取任何行动。
-             */
-            NO_ACTION_NEEDED = 0,
-            /**
-             * @en
-             * The subscription status changed.
-             *
-             * @zh
-             * 订阅状态已更改。
-             */
-            SUBSCRIPTION_STATUS_UPDATED = 1
-        }
-        export class __types_jsb_jsb__BillingResult {
-            static Builder: __types_jsb_jsb__BillingResultBuilder;
-            getResponseCode(): number;
-            getDebugMessage(): string;
-            toString(): string;
-            public static newBuilder(): __types_jsb_jsb__BillingResultBuilder;
-        }
-        export namespace __types_jsb_jsb__BillingResult {
-            type Builder = __types_jsb_jsb__BillingResultBuilder;
-        }
-        export interface __types_jsb_jsb__BillingResultBuilder {
-            setDebugMessage(productType: string): __types_jsb_jsb__BillingResultBuilder;
-            setResponseCode(productType: number): __types_jsb_jsb__BillingResultBuilder;
-            build(): __types_jsb_jsb__BillingResult;
-        }
-        export class __types_jsb_jsb__UserChoiceDetails {
-            getExternalTransactionToken(): string;
-            getOriginalExternalTransactionId(): string;
-            getProducts(): __types_jsb_jsb__UserChoiceDetailsProduct[];
-        }
-        /**
-         * @en Represents an in-app billing purchase.
-         * @zh 代表应用内billing购买。
-         */
-        export class __types_jsb_jsb__Purchase {
-            static PurchaseState: typeof __types_jsb__jsb.PurchaseState;
-            /**
-             * @en One of PurchaseState indicating the state of the purchase.
-             * @zh PurchaseState表示购买状态的其中一个值。
-             */
-            getPurchaseState(): number;
-            /**
-             * @en The time the product was purchased, in milliseconds since the epoch (Jan 1, 1970).
-             * @zh 产品购买的时间，以纪元（1970 年 1 月 1 日）以来的毫秒数表示。
-             */
-            getPurchaseTime(): number;
-            /**
-             * @en Indicates whether the purchase has been acknowledged.
-             * @zh 表示是否已确认购买。
-             */
-            isAcknowledged(): number;
-            /**
-             * @en Indicates whether the subscription renews automatically.
-             * @zh 指示订阅是否自动续订。
-             */
-            isAutoRenewing(): number;
+        export class __types_jsb_jsb__RecallAccess {
             /**
              * @en Hash code
              * @zh hash值
              */
-            hashCode(): number;
-            /**
-             * @en The quantity of the purchased product.
-             * @zh 购买产品的数量。
-             */
-            getQuantity(): number;
-            /**
-             * @en The payload specified when the purchase was acknowledged or consumed.
-             * @zh 确认或消费购买时指定的有效负载。
-             */
-            getDeveloperPayload(): string;
-            /**
-             * @en Returns a unique order identifier for the transaction.
-             * @zh 交易的唯一订单标识符。
-             */
-            getOrderId(): string;
-            /**
-             * @en Returns a String in JSON format that contains details about the purchase order.
-             * @zh 包含有关采购订单详细信息的 JSON 格式的字符串。
-             */
-            getOriginalJson(): string;
-            /**
-             * @en The application package from which the purchase originated.
-             * @zh 购买来源的应用程序包。
-             */
-            getPackageName(): string;
-            /**
-             * @en A token that uniquely identifies a purchase for a given item and user pair.
-             * @zh 唯一标识给定商品和用户对的购买的令牌。
-             */
-            getPurchaseToken(): string;
-            /**
-             * @en String containing the signature of the purchase data that was signed with the private key of the developer.
-             * @zh 包含使用开发者私钥签名的购买数据签名的字符串。
-             */
-            getSignature(): string;
-            /**
-             * @en To string
-             * @zh 转换成字符串
-             */
-            toString(): string;
-            /**
-             * @en Returns account identifiers that were provided when the purchase was made.
-             * @zh 返回购买时提供的帐户标识符。
-             */
-            getAccountIdentifiers(): __types_jsb_jsb__AccountIdentifiers;
-            /**
-             * @en The PendingPurchaseUpdate for an uncommitted transaction.
-             * @zh 返回PendingPurchaseUpdate未提交的事务。
-             */
-            getPendingPurchaseUpdate(): __types_jsb_jsb__PendingPurchaseUpdate;
-            /**
-             * @en the product Ids.
-             * @zh 产品 ID。
-             */
-            getProducts(): string[];
-        }
-        export class __types_jsb_jsb__PendingPurchasesParams {
-            public static newBuilder(): __types_jsb_jsb__PendingPurchasesParamsBuilder;
-        }
-        export interface __types_jsb_jsb__PendingPurchasesParamsBuilder {
-            enableOneTimeProducts: () => __types_jsb_jsb__PendingPurchasesParamsBuilder;
-            enablePrepaidPlans: () => __types_jsb_jsb__PendingPurchasesParamsBuilder;
-            build: () => __types_jsb_jsb__PendingPurchasesParams;
-        }
-        export class __types_jsb_jsb__QueryProductDetailsParamsProduct {
-            public static newBuilder(): __types_jsb_jsb__QueryProductDetailsParamsProductBuilder;
-        }
-        export interface __types_jsb_jsb__QueryProductDetailsParamsProductBuilder {
-            setProductId: (productID: string) => __types_jsb_jsb__QueryProductDetailsParamsProductBuilder;
-            setProductType: (productType: string) => __types_jsb_jsb__QueryProductDetailsParamsProductBuilder;
-            build: () => __types_jsb_jsb__QueryProductDetailsParamsProduct;
-        }
-        export class __types_jsb_jsb__QueryProductDetailsParams {
-            static Product: typeof __types_jsb__jsb.QueryProductDetailsParamsProduct;
-            public static newBuilder(): __types_jsb_jsb__QueryProductDetailsParamsBuilder;
-        }
-        export interface __types_jsb_jsb__QueryProductDetailsParamsBuilder {
-            setProductList: (products: __types_jsb_jsb__QueryProductDetailsParamsProduct[]) => __types_jsb_jsb__QueryProductDetailsParamsBuilder;
-            build: () => __types_jsb_jsb__QueryProductDetailsParams;
-        }
-        export interface __types_jsb_jsb__UserChoiceBillingListener {
-            userSelectedAlternativeBilling(userChoiceDetails: __types_jsb_jsb__UserChoiceDetails): void;
-        }
-        export interface __types_jsb_jsb__PurchasesUpdatedListener {
-            onPurchasesUpdated(billingResult: __types_jsb_jsb__BillingResult, purchases: __types_jsb_jsb__Purchase[]): void;
-        }
-        export interface __types_jsb_jsb__BillingClientBuilder {
-            enableAlternativeBillingOnly: () => __types_jsb_jsb__BillingClientBuilder;
-            enableExternalOffer: () => __types_jsb_jsb__BillingClientBuilder;
-            enablePendingPurchases: (params: __types_jsb_jsb__PendingPurchasesParams) => __types_jsb_jsb__BillingClientBuilder;
-            enableUserChoiceBilling: (userChoiceBillingListener: __types_jsb_jsb__UserChoiceBillingListener) => __types_jsb_jsb__BillingClientBuilder;
-            setListener: (listener: __types_jsb_jsb__PurchasesUpdatedListener) => __types_jsb_jsb__BillingClientBuilder;
-            build: () => __types_jsb_jsb__BillingClient;
-        }
-        export interface __types_jsb_jsb__BillingConfig {
-            /**
-             * @en The customer's country code.
-             * @zh 客户的国家代码。
-             */
-            getCountryCode(): string;
-        }
-        /**
-         * @en The details used to report transactions made via alternative billing without user choice to use Google Play Billing.
-         * @zh 用于报告用户未选择使用 Google Play Billing方式而通过替代Billing方式进行的交易的详细信息。
-         */
-        export interface __types_jsb_jsb__AlternativeBillingOnlyReportingDetails {
-            /**
-             * @en An external transaction token that can be used to report a transaction made via alternative billing
-             *     without user choice to use Google Play billing.
-             * @zh 返回一个外部交易令牌，该令牌可用于报告通过替代付款方式进行的交易，而无需用户选择使用 Google Play 付款方式。
-             */
-            getExternalTransactionToken(): string;
-        }
-        /**
-         * @en The details used to report transactions made via external offer.
-         * @zh 用于报告通过外部报价进行的交易的详细信息。
-         */
-        export interface __types_jsb_jsb__ExternalOfferReportingDetails {
-            /**
-             * @en An external transaction token that can be used to report a transaction made via external offer.
-             * @zh 可用于报告通过外部报价进行的交易的外部交易令牌。
-             */
-            getExternalTransactionToken(): string;
-        }
-        /**
-         * @en Results related to in-app messaging.
-         * @zh 与应用程序内消息相关的结果。
-         */
-        export class __types_jsb_jsb__InAppMessageResult {
-            static InAppMessageResponseCode: typeof __types_jsb_jsb__InAppMessageResponseCode;
-            /**
-             * @en Response code for the in-app messaging API call.
-             * @zh 应用内消息传递 API 调用的响应代码。
-             */
-            getResponseCode(): number;
-            /**
-             * @en Token that identifies the purchase to be acknowledged, if any.
-             * @zh 返回标识需要确认的购买的令牌。
-             */
-            getPurchaseToken(): string;
-        }
-        /**
-         * @en
-         * Supported replacement modes to replace an existing subscription with a new one.
-         *
-         * @zh
-         * 支持替换模式，可将现有订购替换为新订购。
-         */
-        export enum __types_jsb_jsb__ReplacementMode {
-            /**
-             * @en
-             * Unknown replacement mode.
-             *
-             * @zh
-             * 未知替换模式
-             */
-            UNKNOWN_REPLACEMENT_MODE = 0,
-            /**
-             * @en
-             * The new plan takes effect immediately, and the remaining time will be prorated and credited to the user.
-             *
-             * @zh
-             * 新计划立即生效，剩余时间将按比例计入用户贷方。
-             */
-            WITH_TIME_PRORATION = 1,
-            /**
-             * @en
-             * The new plan takes effect immediately, and the billing cycle remains the same.
-             *
-             * @zh
-             * 新计划立即生效，计费周期保持不变。
-             */
-            CHARGE_PRORATED_PRICE = 2,
-            /**
-             * @en
-             * The new plan takes effect immediately, and the new price will be charged on next recurrence time.
-             *
-             * @zh
-             * 新计划立即生效，新价格将在下次复诊时收取。
-             */
-            WITHOUT_PRORATION = 3,
-            /**
-             * @en
-             * Replacement takes effect immediately, and the user is charged full price of new plan and
-             * is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
-             *
-             * @zh
-             * 替换立即生效，用户将被收取新计划的全额费用，并获得一个完整的计费周期，加上旧计划按比例计算的剩余时间。
-             */
-            CHARGE_FULL_PRICE = 5,
-            /**
-             * @en
-             * The new purchase takes effect immediately, the new plan will take effect when the old item expires.
-             *
-             * @zh
-             * 新购买立即生效，新计划将在旧项目到期时生效。
-             */
-            DEFERRED = 6
-        }
-        export class __types_jsb_jsb__SubscriptionUpdateParams {
-            static Builder: __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-            static newBuilder: () => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-            static ReplacementMode: typeof __types_jsb__jsb.ReplacementMode;
-        }
-        export interface __types_jsb_jsb__SubscriptionUpdateParamsBuilder {
-            setOldPurchaseToken: (purchaseToken: string) => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-            setOriginalExternalTransactionId: (externalTransactionId: string) => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-            setSubscriptionReplacementMode: (subscriptionReplacementMode: number) => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-            build: () => __types_jsb_jsb__SubscriptionUpdateParams;
-        }
-        export class __types_jsb_jsb__BillingFlowParams {
-            static ProductDetailsParams: typeof __types_jsb__jsb.ProductDetailsParams;
-            static SubscriptionUpdateParams: typeof __types_jsb__jsb.SubscriptionUpdateParams;
-            static Builder: __types_jsb_jsb__BillingFlowParamsBuilder;
-            public static newBuilder(): __types_jsb_jsb__BillingFlowParamsBuilder;
-        }
-        export class __types_jsb_jsb__ConsumeParams {
-            public static newBuilder(): __types_jsb_jsb__ConsumeParamsBuilder;
-        }
-        export interface __types_jsb_jsb__ConsumeParamsBuilder {
-            setPurchaseToken: (purchaseToken: string) => __types_jsb_jsb__ConsumeParamsBuilder;
-            build: () => __types_jsb_jsb__ConsumeParams;
-        }
-        export class __types_jsb_jsb__AcknowledgePurchaseParams {
-            public static newBuilder(): __types_jsb_jsb__AcknowledgePurchaseParamsBuilder;
-        }
-        export interface __types_jsb_jsb__AcknowledgePurchaseParamsBuilder {
-            setPurchaseToken: (purchaseToken: string) => __types_jsb_jsb__AcknowledgePurchaseParamsBuilder;
-            build: () => __types_jsb_jsb__AcknowledgePurchaseParams;
-        }
-        export class __types_jsb_jsb__QueryPurchasesParams {
-            public static newBuilder(): __types_jsb_jsb__QueryPurchasesParamsBuilder;
-        }
-        export interface __types_jsb_jsb__QueryPurchasesParamsBuilder {
-            setProductType: (productType: string) => __types_jsb_jsb__QueryPurchasesParamsBuilder;
-            build: () => __types_jsb_jsb__QueryPurchasesParams;
-        }
-        /**
-         * @en
-         * A high-level category of the in-app message.
-         * One category can be mapped to multiple in-app messages.
-         *
-         * @zh
-         * 应用程序内信息的高级类别。
-         * 一个类别可映射到多个应用程序内信息。
-         */
-        export enum __types_jsb_jsb__InAppMessageCategoryId {
-            /**
-             * @en
-             * A Product type for Android apps in-app products.
-             *
-             * @zh
-             * 应用程序中未知的消息类别 ID
-             */
-            UNKNOWN_IN_APP_MESSAGE_CATEGORY_ID = 0,
-            /**
-             * @en
-             * The in-app messages of this category are for transactional purpose, such as payment issues.
-             *
-             * @zh
-             * 这类应用内信息用于交易目的，如支付问题。
-             */
-            TRANSACTIONAL = 2
-        }
-        export class __types_jsb_jsb__InAppMessageParams {
-            public static newBuilder(): __types_jsb_jsb__InAppMessageParamsBuilder;
-            static InAppMessageCategoryId: typeof __types_jsb_jsb__InAppMessageCategoryId;
-        }
-        export interface __types_jsb_jsb__InAppMessageParamsBuilder {
-            addAllInAppMessageCategoriesToShow: () => __types_jsb_jsb__InAppMessageParamsBuilder;
-            addInAppMessageCategoryToShow: (inAppMessageCategoryId: number) => __types_jsb_jsb__InAppMessageParamsBuilder;
-            build: () => __types_jsb_jsb__InAppMessageParams;
-        }
-        export interface __types_jsb_jsb__GetBillingConfigParamsBuilder {
-            build: () => __types_jsb_jsb__GetBillingConfigParams;
-        }
-        export class __types_jsb_jsb__GetBillingConfigParams {
-            public static newBuilder(): __types_jsb_jsb__GetBillingConfigParamsBuilder;
-        }
-        /**
-         * @en
-         * Connection state of billing client.
-         *
-         * @zh
-         * Billing client的连接状态
-         */
-        export enum __types_jsb_jsb__ConnectionState {
-            /**
-             * @en
-             * This client was not yet connected to billing service or was already closed.
-             *
-             * @zh
-             * 此客户端尚未连接到Billing服务或已关闭。
-             */
-            DISCONNECTED = 0,
-            /**
-             * @en
-             * This client is currently in process of connecting to billing service.
-             *
-             * @zh
-             * 此客户端目前正在连接到Billing服务。
-             */
-            CONNECTING = 1,
-            /**
-             * @en
-             * This client is currently connected to billing service.
-             *
-             * @zh
-             * 此客户端当前已连接到Billing服务。
-             */
-            CONNECTED = 2,
-            /**
-             * @en
-             * This client was already closed and shouldn't be used again.
-             *
-             * @zh
-             * 该客户端已关闭，不应再次使用。
-             */
-            CLOSED = 3
-        }
-        /**
-         * @en
-         * Possible response codes.
-         *
-         * @zh
-         * 可能的响应代码。
-         */
-        export enum __types_jsb_jsb__BillingResponseCode {
-            /**
-             * @en
-             * This field is deprecated.
-             * See SERVICE_UNAVAILABLE which will be used instead of this code.
-             *
-             * @zh
-             * 这个字段已经废弃。
-             * 看看SERVICE_UNAVAILABLE将使用哪一个来代替此代码。
-             */
-            SERVICE_TIMEOUT = -3,
-            /**
-             * @en
-             * The requested feature is not supported by the Play Store on the current device.
-             *
-             * @zh
-             * 当前设备上的 Play Store 不支持所请求的功能。
-             */
-            FEATURE_NOT_SUPPORTED = -2,
-            /**
-             * @en
-             * The app is not connected to the Play Store service via the Google Play Billing Library.
-             *
-             * @zh
-             * 该应用未通过 Google Play Billing库连接到 Play Store 服务。
-             */
-            SERVICE_DISCONNECTED = -1,
-            /**
-             * @en
-             * Success.
-             *
-             * @zh
-             * 成功。
-             */
-            OK = 0,
-            /**
-             * @en
-             * Transaction was canceled by the user.
-             *
-             * @zh
-             * 交易已被用户取消。
-             */
-            USER_CANCELED = 1,
-            /**
-             * @en
-             * The service is currently unavailable.
-             *
-             * @zh
-             * 当前设备上的 Play Store 不支持所请求的功能。
-             */
-            SERVICE_UNAVAILABLE = 2,
-            /**
-             * @en
-             * A user billing error occurred during processing.
-             *
-             * @zh
-             * 处理过程中出现用户billing错误。
-             */
-            BILLING_UNAVAILABLE = 3,
-            /**
-             * @en
-             * The requested product is not available for purchase.
-             *
-             * @zh
-             * 所请求的产品无法购买。
-             */
-            ITEM_UNAVAILABLE = 4,
-            /**
-             * @en
-             * Error resulting from incorrect usage of the API.
-             *
-             * @zh
-             * 由于错误使用 API 而导致的错误。
-             */
-            DEVELOPER_ERROR = 5,
-            /**
-             * @en
-             * Fatal error during the API action.
-             *
-             * @zh
-             * API 操作期间发生致命错误。
-             */
-            ERROR = 6,
-            /**
-             * @en
-             * The purchase failed because the item is already owned.
-             *
-             * @zh
-             * 购买失败，因为该物品已被拥有。
-             */
-            ITEM_ALREADY_OWNED = 7,
-            /**
-             * @en
-             * Requested action on the item failed since it is not owned by the user.
-             *
-             * @zh
-             * 由于该项目不属于用户，因此对该项目请求的操作失败。
-             */
-            ITEM_NOT_OWNED = 8,
-            /**
-             * @en
-             * A network error occurred during the operation.
-             *
-             * @zh
-             * 操作期间发生网络错误。
-             */
-            NETWORK_ERROR = 12
-        }
-        /**
-         * @en
-         * Features/capabilities supported by isFeatureSupported.
-         *
-         * @zh
-         * 支持的特性/能力isFeatureSupported。
-         */
-        export enum __types_jsb_jsb__FeatureType {
-            /**
-             * @en
-             * Purchase/query for subscriptions.
-             *
-             * @zh
-             * 购买/查询订阅。
-             */
-            SUBSCRIPTIONS = "subscriptions",
-            /**
-             * @en
-             * Subscriptions update/replace.
-             *
-             * @zh
-             * 订阅更新/替换。
-             */
-            SUBSCRIPTIONS_UPDATE = "subscriptionsUpdate",
-            /**
-             * @en
-             * Launch a price change confirmation flow.
-             *
-             * @zh
-             * 启动价格变动确认流程。
-             */
-            PRICE_CHANGE_CONFIRMATION = "priceChangeConfirmation",
-            /**
-             * @en
-             * Show in-app messages.
-             *
-             * @zh
-             * 显示应用内消息。
-             */
-            IN_APP_MESSAGING = "bbb",
-            /**
-             * @en
-             * Play billing library support for querying and purchasing.
-             *
-             * @zh
-             * Play Billing库支持查询、购买。
-             */
-            PRODUCT_DETAILS = "fff",
-            /**
-             * @en
-             * Get billing config.
-             *
-             * @zh
-             * 获取计费配置。
-             */
-            BILLING_CONFIG = "ggg",
-            /**
-             * @en
-             * Alternative billing only.
-             *
-             * @zh
-             * 仅限替代Billing。
-             */
-            ALTERNATIVE_BILLING_ONLY = "jjj",
-            /**
-             * @en
-             * Play billing library support for external offer.
-             *
-             * @zh
-             * Play billing库支持外部报价。
-             */
-            EXTERNAL_OFFER = "kkk"
-        }
-        /**
-         * @en
-         * Supported Product types.
-         *
-         * @zh
-         * 支持的产品类型。
-         */
-        export enum __types_jsb_jsb__ProductType {
-            /**
-             * @en
-             * A Product type for Android apps in-app products.
-             *
-             * @zh
-             * Android 应用内产品的产品类型。
-             */
-            INAPP = "inapp",
-            /**
-             * @en
-             * A Product type for Android apps subscriptions.
-             *
-             * @zh
-             * Android 应用程序订阅的产品类型。
-             */
-            SUBS = "subs"
-        }
-        export interface __types_jsb_jsb__BillingClientStateListener {
-            onBillingServiceDisconnected(): void;
-            onBillingSetupFinished(billingResult: __types_jsb_jsb__BillingResult): void;
-        }
-        export interface __types_jsb_jsb__ProductDetailsResponseListener {
-            onProductDetailsResponse(billingResult: __types_jsb_jsb__BillingResult, productDetailsList: __types_jsb_jsb__ProductDetails[]): void;
-        }
-        export interface __types_jsb_jsb__ConsumeResponseListener {
-            onConsumeResponse(billingResult: __types_jsb_jsb__BillingResult, token: string): void;
-        }
-        export interface __types_jsb_jsb__AcknowledgePurchaseResponseListener {
-            onAcknowledgePurchaseResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-        }
-        export interface __types_jsb_jsb__PurchasesResponseListener {
-            onQueryPurchasesResponse(billingResult: __types_jsb_jsb__BillingResult, purchase: __types_jsb_jsb__Purchase[]): void;
-        }
-        export interface __types_jsb_jsb__BillingConfigResponseListener {
-            onBillingConfigResponse(billingResult: __types_jsb_jsb__BillingResult, billingConfig: __types_jsb_jsb__BillingConfig): void;
-        }
-        export interface __types_jsb_jsb__AlternativeBillingOnlyReportingDetailsListener {
-            onAlternativeBillingOnlyTokenResponse(billingResult: __types_jsb_jsb__BillingResult, alternativeBillingOnlyReportingDetails: __types_jsb_jsb__AlternativeBillingOnlyReportingDetails): void;
-        }
-        export interface __types_jsb_jsb__AlternativeBillingOnlyAvailabilityListener {
-            onAlternativeBillingOnlyAvailabilityResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-        }
-        export interface __types_jsb_jsb__ExternalOfferReportingDetailsListener {
-            onExternalOfferReportingDetailsResponse(billingResult: __types_jsb_jsb__BillingResult, externalOfferReportingDetails: __types_jsb_jsb__ExternalOfferReportingDetails): void;
-        }
-        export interface __types_jsb_jsb__ExternalOfferAvailabilityListener {
-            onExternalOfferAvailabilityResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-        }
-        export interface __types_jsb_jsb__AlternativeBillingOnlyInformationDialogListener {
-            onAlternativeBillingOnlyInformationDialogResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-        }
-        export interface __types_jsb_jsb__ExternalOfferInformationDialogListener {
-            onExternalOfferInformationDialogResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-        }
-        export interface __types_jsb_jsb__InAppMessageResponseListener {
-            onInAppMessageResponse(inAppMessageResult: __types_jsb_jsb__InAppMessageResult): void;
-        }
-        export class __types_jsb_jsb__PlayException {
-            getMessage(): string;
-            getLocalizedMessage(): string;
-            printStackTrace(): void;
-            toString(): string;
-        }
-        export interface __types_jsb_jsb__OnCanceledListener {
-            onCanceled(): void;
-        }
-        export interface __types_jsb_jsb__OnCompleteListener {
-            onComplete(task: any): void;
-        }
-        export interface __types_jsb_jsb__OnFailureListener {
-            onFailure(e: __types_jsb_jsb__PlayException): void;
-        }
-        export interface __types_jsb_jsb__OnSuccessListener {
-            onSuccess(result: any): void;
-        }
-        export interface __types_jsb_jsb__OnContinueWithListener {
-            then(result: any): void;
-        }
-        export class __types_jsb_jsb__PlayTask {
-            public addOnCanceledListener(listener: __types_jsb_jsb__OnCanceledListener): __types_jsb_jsb__PlayTask;
-            public addOnCompleteListener(listener: __types_jsb_jsb__OnCompleteListener): __types_jsb_jsb__PlayTask;
-            public addOnFailureListener(listener: __types_jsb_jsb__OnFailureListener): __types_jsb_jsb__PlayTask;
-            public addOnSuccessListener(listener: __types_jsb_jsb__OnSuccessListener): __types_jsb_jsb__PlayTask;
-            public continueWith(listener: __types_jsb_jsb__OnContinueWithListener): __types_jsb_jsb__PlayTask;
-            public getResult(listener: __types_jsb_jsb__OnSuccessListener): any;
-            public isCanceled(): boolean;
-            public isComplete(): boolean;
-            public isSuccessful(): boolean;
-        }
-        export class __types_jsb_jsb__RecallAccess {
             public hashCode(): number;
+            /**
+             * @en Returns the session id to be passed into PGS server API.
+             * @zh 返回要传递到 PGS server API 的会话 ID。
+             */
             public getSessionId(): string;
+            /**
+             * @en Is it equal to another RecallAccess.
+             * @zh 判断与另一个 RecallAccess 是否相等。
+             */
             public equals(other: __types_jsb_jsb__RecallAccess): boolean;
         }
+        /**
+         * @en Data interface for retrieving achievement information.
+         * @zh 用于检索成就信息的数据接口。
+         */
         export class __types_jsb_jsb__Achievement {
+            /**
+             * @en Constant returned by getState() indicating an unlocked achievement.
+             * @zh getState 返回的常量表示未解锁的成就。
+             */
             public static STATE_UNLOCKED: number;
+            /**
+             * @en Constant returned by getState() indicating a revealed achievement.
+             * @zh getState 返回的常量表示已显示的成就。
+             */
             public static STATE_REVEALED: number;
+            /**
+             * @en Constant returned by getState() indicating a hidden achievement.
+             * @zh getState 返回的常量表示隐藏的成就。
+             */
             public static STATE_HIDDEN: number;
+            /**
+             * @en Constant returned by getType() indicating a standard achievement.
+             * @zh getState 返回的常量表示标准的成就。
+             */
             public static TYPE_STANDARD: number;
+            /**
+             * @en Constant returned by getType() indicating an incremental achievement.
+             * @zh getState 返回的常量表示增量的成就。
+             */
             public static TYPE_INCREMENTAL: number;
+            /**
+             * @en Retrieves the number of steps this user has gone toward unlocking this achievement;
+             *     only applicable for TYPE_INCREMENTAL achievement types.
+             * @zh 检索该用户为解锁该成就所走的步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+             */
             public getCurrentSteps(): number;
+            /**
+             * @en Returns the Achievement.AchievementState of the achievement.
+             * @zh 返回 Achievement.AchievementState 成就。
+             */
             public getState(): number;
+            /**
+             * @en Retrieves the total number of steps necessary to unlock this achievement; only applicable for TYPE_INCREMENTAL achievement types
+             * @zh 检索解锁此成就所需的总步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+             */
             public getTotalSteps(): number;
+            /**
+             * @en Returns the Achievement.AchievementType of this achievement.
+             * @zh 返回 Achievement.AchievementType 此成就。
+             */
             public getType(): number;
+            /**
+             * @en Retrieves the timestamp (in millseconds since epoch) at which this achievement was last updated.
+             * @zh 检索此成就最后更新的时间戳（以纪元以来的毫秒数为单位）。
+             */
             public getLastUpdatedTimestamp(): number;
+            /**
+             * @en Retrieves the XP value of this achievement.
+             * @zh 检索此成就的 XP 值。
+             */
             public getXpValue(): number;
+            /**
+             * @en Retrieves the ID of this achievement.
+             * @zh 检索此成就的 ID。
+             */
             public getAchievementId(): string;
+            /**
+             * @en Retrieves the description for this achievement.
+             * @zh 检索此成就的描述。
+             */
             public getDescription(): string;
+            /**
+             * @enRetrieves the number of steps this user has gone toward unlocking this achievement
+             *              (formatted for the user's locale); only applicable for TYPE_INCREMENTAL achievement types.
+             * @zh 检索该用户为解锁此成就所经过的步数（根据用户的语言环境格式化）；仅适用于 TYPE_INCREMENTAL成就类型。
+             */
             public getFormattedCurrentSteps(): string;
+            /**
+             * @en Loads the total number of steps necessary to unlock this achievement
+             *     (formatted for the user's locale) into the given CharArrayBuffer; only applicable for TYPE_INCREMENTAL achievement types.
+             * @zh 检索解锁此成就所需的总步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+             */
             public getFormattedTotalSteps(): string;
+            /**
+             * @en Retrieves the name of this achievement.
+             * @zh 检索此成就的名称。
+             */
             public getName(): string;
+            /**
+             * @en Retrieves a URI that can be used to load the achievement's revealed image icon.
+             * @zh 检索可用于加载成就显示图像图标的 URI。
+             */
             public getRevealedImageUrl(): string;
+            /**
+             * @en Retrieves a URI that can be used to load the achievement's unlocked image icon.
+             * @zh 检索可用于加载成就的解锁图像图标的 URI。
+             */
             public getUnlockedImageUrl(): string;
         }
+        /**
+         * @en Data structure providing access to a list of achievements.
+         * @zh 提供访问成就列表的数据结构。
+         */
         export class __types_jsb_jsb__AchievementBuffer {
+            /**
+             * @en Get the count of achievement.
+             * @zh 获取 achievement 的数量 。
+             */
             public getCount(): number;
+            /**
+             * @en Get the item at the specified position.
+             * @zh 获取指定位置的物品。
+             */
             public get(i: number): __types_jsb_jsb__Achievement;
+            /**
+             * @en Releases the data buffer, for use in try-with-resources.
+             * @zh 释放数据缓冲区，以供在 try-with-resources 中使用。
+             */
             public close(): void;
+            /**
+             * @en Releases resources used by the buffer.
+             * @zh 释放缓冲区使用的资源。
+             */
             public release(): void;
-            public isClosed(): boolean;
         }
+        /**
+         * @en A client to interact with achievements functionality.
+         * @zh 与 Achievements 功能交互的客户端。
+         */
         export class __types_jsb_jsb__AchievementsClient {
+            /**
+             * @en Show default achievement page.
+             * @zh 显示默认的成就页面。
+             */
             public showAchievements(): void;
+            /**
+             * @en Returns a Task which asynchronously increments an achievement by the given number of steps.
+             * @zh 返回一个 Task 以给定步数异步增加成就的方法。
+             */
             public incrementImmediate(id: string, numSteps: number): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Returns a Task which asynchronously loads an annotated AchievementBuffer that represents the achievement data.
+             *     for the currently signed-in player.
+             * @zh 返回一个 Task 异步加载的task， AchievementBuffer该注释代表当前登录玩家的成就数据。
+             */
             public load(forceReload: boolean): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Returns a Task which asynchronously reveals a hidden achievement to the currently signed in player.
+             * @zh 返回一个 Task 异步向当前登录的玩家显示隐藏成就的对象。
+             */
             public revealImmediate(id: string): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Returns a Task which asynchronously sets an achievement to have at least the given number of steps completed.
+             * @zh 返回一个 Task 异步设置成就以至少完成给定数量的步骤。
+             */
             public setStepsImmediate(id: string, numSteps: number): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Returns a Task which asynchronously unlocks an achievement for the currently signed in player.
+             * @zh 返回一个 Task 异步解锁当前登录玩家的成就。
+             */
             public unlockImmediate(id: string): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Increments an achievement by the given number of steps.
+             * @zh 按给定的步数增加成就。
+             */
             public increment(id: string, numSteps: number): void;
+            /**
+             * @en Reveals a hidden achievement to the currently signed-in player.
+             * @zh 向当前登录的玩家揭示隐藏的成就。
+             */
             public reveal(id: string): void;
+            /**
+             * @en Sets an achievement to have at least the given number of steps completed.
+             * @zh 设置一项成就，至少完成给定数量的步骤。
+             */
             public setSteps(id: string, numSteps: number): void;
+            /**
+             * @en Unlocks an achievement for the currently signed in player.
+             * @zh 为当前登录的玩家解锁一项成就。
+             */
             public unlock(id: string): void;
         }
+        /**
+         * @en A client for performing sign-in with Play Games Services.
+         * @zh 用于使用 Play Games Services 执行登录的客户端。
+         */
         export class __types_jsb_jsb__GamesSignInClient {
+            /**
+             * @en Returns the current authentication status via an AuthenticationResult.
+             * @zh 通过 返回当前身份验证状态 AuthenticationResult 。
+             */
             public isAuthenticated(): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Requests server-side access to Play Games Services for the currently signed-in player.
+             * @zh 向当前登录的玩家请求服务器端访问 Play Games Services。
+             */
             public requestServerSideAccess(serverClientId: string, forceRefreshToken: boolean): __types_jsb_jsb__PlayTask;
+            /**
+             * @en Manually requests that your game sign in with Play Games Services.
+             * @zh 手动请求您的游戏通过 Play Games Services 登录。
+             */
             public signIn(): __types_jsb_jsb__PlayTask;
         }
+        /**
+         * @en A client for the recall functionality.
+         * @zh Recall 功能客户端。
+         */
         export class __types_jsb_jsb__RecallClient {
+            /**
+             * @en Returns a RecallAccess to use for server-to-server communication between the 3p game server and Play Games Services server.
+             * @zh 返回 RecallAccess 用于第三方游戏服务器和 Play 游戏服务服务器之间的服务器到服务器通信。
+             */
             public requestRecallAccess(): __types_jsb_jsb__PlayTask;
         }
         export namespace __types_jsb__jsb {
@@ -73954,6 +75203,7 @@ declare module "cc" {
                 static UPDATE_FINISHED: number;
                 static UPDATE_FAILED: number;
                 static ERROR_DECOMPRESS: number;
+                static DOWNLOAD_MANIFEST: number;
                 constructor(eventName: string, manager: __types_jsb_jsb__AssetsManager, eventCode: number, assetId?: string, message?: string, curleCode?: number, curlmCode?: number);
                 getAssetsManagerEx(): __types_jsb_jsb__AssetsManager;
                 isResuming(): boolean;
@@ -73980,6 +75230,7 @@ declare module "cc" {
                 prepareUpdate(): void;
                 update(): void;
                 isResuming(): boolean;
+                cancelUpdate(): void;
                 getDownloadedFiles(): number;
                 getDownloadedBytes(): number;
                 getTotalFiles(): number;
@@ -74012,1205 +75263,404 @@ declare module "cc" {
                 readonly thermalStatusNormalized: number;
                 onThermalStatusChanged?: (previousStatus: number, newStatus: number, statusMin: number, statusMax: number) => void;
             } | undefined;
-            export interface UserChoiceDetailsProduct {
-                hashCode(): number;
-                getId(): string;
-                getOfferToken(): string;
-                getType(): string;
-                toString(): string;
-                equals(product: __types_jsb_jsb__UserChoiceDetailsProduct): boolean;
-            }
-            export class UserChoiceDetails {
-                getExternalTransactionToken(): string;
-                getOriginalExternalTransactionId(): string;
-                getProducts(): __types_jsb_jsb__UserChoiceDetailsProduct[];
-            }
-            /**
-             * @en Represents the offer details to buy an one-time purchase product.
-             * @zh 代表一次性购买产品的报价详情。
-             */
-            export interface OneTimePurchaseOfferDetails {
-                /**
-                 * @en The price for the payment in micro-units, where 1,000,000 micro-units equal one unit of the currency.
-                 * @zh 以微单位返回支付价格，其中 1,000,000 个微单位等于 1 个货币单位。
-                 */
-                getPriceAmountMicros(): number;
-                /**
-                 * @en Formatted price for the payment, including its currency sign.
-                 * @zh 支付的格式化价格，包括其货币单位。
-                 */
-                getFormattedPrice(): string;
-                /**
-                 * @en ISO 4217 currency code for price.
-                 * @zh 价格的 ISO 4217 货币代码。
-                 */
-                getPriceCurrencyCode(): string;
-            }
-            /**
-             * @en Represents additional details of an installment subscription plan.
-             * @zh 表示分期付款订阅计划的附加详细信息。
-             */
-            export interface InstallmentPlanDetails {
-                /**
-                 * @en Committed payments count after a user signs up for this subscription plan.
-                 * @zh 用户注册此订阅计划后承诺的付款数量。
-                 */
-                getInstallmentPlanCommitmentPaymentsCount(): number;
-                /**
-                 * @en Subsequent committed payments count after this subscription plan renews.
-                 * @zh 此订阅计划续订后的后续承诺付款数量。
-                 */
-                getSubsequentInstallmentPlanCommitmentPaymentsCount(): number;
-            }
-            /**
-             * @en Represents a pricing phase, describing how a user pays at a point in time.
-             * @zh 表示定价阶段，描述用户在某个时间点如何付款。
-             */
-            export interface PricingPhase {
-                /**
-                 * @en Number of cycles for which the billing period is applied.
-                 * @zh 计费周期适用的周期数。
-                 */
-                getBillingCycleCount(): number;
-                /**
-                 * @en The price for the payment cycle in micro-units, where 1,000,000 micro-units equal one unit of the currency.
-                 * @zh 微单位付款周期的价格，其中 1,000,000 个微单位等于 1 个货币单位。
-                 */
-                getPriceAmountMicros(): number;
-                /**
-                 * @en RecurrenceMode for the pricing phase.
-                 * @zh 定价阶段的RecurrenceMode。
-                 */
-                getRecurrenceMode(): number;
-                /**
-                 * @en Billing period for which the given price applies, specified in ISO 8601 format.
-                 * @zh 给定价格适用的计费期，以 ISO 8601 格式指定。
-                 */
-                getBillingPeriod(): string;
-                /**
-                 * @en Formatted price for the payment cycle, including its currency sign.
-                 * @zh 付款周期的格式化价格，包括其货币符号。
-                 */
-                getFormattedPrice(): string;
-                /**
-                 * @en Returns ISO 4217 currency code for price.
-                 * @zh 返回价格的 ISO 4217 货币代码。
-                 */
-                getPriceCurrencyCode(): string;
-            }
-            /**
-             * @en Represents a pricing phase, describing how a user pays at a point in time.
-             * @zh 表示定价阶段，描述用户在某个时间点如何付款。
-             */
-            export interface PricingPhases {
-                /**
-                 * @en Returns ISO 4217 currency code for price.
-                 * @zh 返回价格的 ISO 4217 货币代码。
-                 */
-                getPricingPhaseList(): __types_jsb_jsb__PricingPhase[];
-            }
-            /**
-             * @en Represents the available purchase plans to buy a subscription product.
-             * @zh 代表一次性购买产品的报价详情。
-             */
-            export interface SubscriptionOfferDetails {
-                /**
-                 * @en The base plan id associated with the subscription product.
-                 * @zh 与订阅产品相关的基本计划 ID。
-                 */
-                getBasePlanId(): string;
-                /**
-                 * @en The offer id associated with the subscription product.
-                 * @zh 与订阅产品相关的优惠 ID。
-                 */
-                getOfferId(): string;
-                /**
-                 * @en The offer tags associated with this Subscription Offer.
-                 * @zh 与此订阅优惠相关的优惠标签。
-                 */
-                getOfferTags(): string[];
-                /**
-                 * @en The offer token required to pass in launchBillingFlow to purchase the subscription product with these pricing phases.
-                 * @zh 在 launchBillingFlow 中传递以使用这些定价阶段购买订阅产品所需的优惠令牌。
-                 */
-                getOfferToken(): string;
-                /**
-                 * @en The pricing phases for the subscription product.
-                 * @zh 订阅产品的定价区间。
-                 */
-                getPricingPhases(): __types_jsb_jsb__PricingPhases;
-                /**
-                 * @en The additional details of an installment plan.
-                 * @zh 分期付款计划的附加详细信息。
-                 */
-                getInstallmentPlanDetails(): __types_jsb_jsb__InstallmentPlanDetails;
-            }
-            /**
-             * @en Represents the details of a one time or subscription product.
-             * @zh 代表一次性或订阅产品的详细信息。
-             */
-            export class ProductDetails {
-                static RecurrenceMode: typeof __types_jsb__jsb.RecurrenceMode;
-                equals(other: __types_jsb_jsb__ProductDetails): boolean;
-                /**
-                 * @en Hash code
-                 * @zh hash值
-                 */
-                hashCode(): number;
-                /**
-                 * @en The description of the product.
-                 * @zh 产品的描述。
-                 */
-                getDescription(): string;
-                /**
-                 * @en The name of the product being sold.
-                 * @zh 所售产品的名称。
-                 */
-                getName(): string;
-                /**
-                 * @en The product's Id.
-                 * @zh 产品的 ID。
-                 */
-                getProductId(): string;
-                /**
-                 * @en The ProductType of the product.
-                 * @zh ProductType产品的。
-                 */
-                getProductType(): string;
-                /**
-                 * @en The title of the product being sold.
-                 * @zh 所售产品的标题。
-                 */
-                getTitle(): string;
-                /**
-                 * @en To string
-                 * @zh 转换成字符串
-                 */
-                toString(): string;
-                /**
-                 * @en The offer details of an one-time purchase product.
-                 * @zh 代表一次性购买产品的报价详情。
-                 */
-                getOneTimePurchaseOfferDetails(): __types_jsb_jsb__OneTimePurchaseOfferDetails;
-                /**
-                 * @en A list containing all available offers to purchase a subscription product.
-                 * @zh 返回包含购买订阅产品的所有可用优惠的列表。
-                 */
-                getSubscriptionOfferDetails(): __types_jsb_jsb__SubscriptionOfferDetails[];
-            }
-            /**
-             * @en Account identifiers that were specified when the purchase was made.
-             * @zh 购买时指定的帐户标识符。
-             */
-            export interface AccountIdentifiers {
-                /**
-                 * @en The obfuscated account id specified in setObfuscatedAccountId.
-                 * @zh 在setObfuscatedAccountId中设置的混淆账户id
-                 */
-                getObfuscatedAccountId(): string;
-                /**
-                 * @en The obfuscated profile id specified in setObfuscatedProfileId.
-                 * @zh 在setObfuscatedProfileId中设置的混淆profile id
-                 */
-                getObfuscatedProfileId(): string;
-            }
-            /**
-             * @en Represents a pending change/update to the existing purchase.
-             * @zh 表示对现有购买的待定更改/更新。
-             */
-            export interface PendingPurchaseUpdate {
-                /**
-                 * @en A token that uniquely identifies this pending transaction.
-                 * @zh 唯一标识此待处理交易的令牌。
-                 */
-                getPurchaseToken(): string;
-                /**
-                 * @en The product ids.
-                 * @zh 产品 ID。
-                 */
-                getProducts(): string[];
-            }
-            /**
-             * @en
-             * Possible purchase states.
-             *
-             * @zh
-             * 可能的购买状态。
-             */
-            export enum PurchaseState {
-                /**
-                 * @en
-                 * Purchase is pending and not yet completed to be processed by your app.
-                 *
-                 * @zh
-                 * 购买处于待处理状态且尚未完成，无法由您的应用程序处理。
-                 */
-                PENDING = 2,
-                /**
-                 * @en
-                 * Purchase is completed..
-                 *
-                 * @zh
-                 * 购买完成。
-                 */
-                PURCHASED = 1,
-                /**
-                 * @en
-                 * Purchase with unknown state.
-                 *
-                 * @zh
-                 * 未知状态
-                 */
-                UNSPECIFIED_STATE = 0
-            }
-            /**
-             * @en Represents an in-app billing purchase.
-             * @zh 代表应用内billing购买。
-             */
-            export class Purchase {
-                static PurchaseState: typeof __types_jsb__jsb.PurchaseState;
-                /**
-                 * @en One of PurchaseState indicating the state of the purchase.
-                 * @zh PurchaseState表示购买状态的其中一个值。
-                 */
-                getPurchaseState(): number;
-                /**
-                 * @en The time the product was purchased, in milliseconds since the epoch (Jan 1, 1970).
-                 * @zh 产品购买的时间，以纪元（1970 年 1 月 1 日）以来的毫秒数表示。
-                 */
-                getPurchaseTime(): number;
-                /**
-                 * @en Indicates whether the purchase has been acknowledged.
-                 * @zh 表示是否已确认购买。
-                 */
-                isAcknowledged(): number;
-                /**
-                 * @en Indicates whether the subscription renews automatically.
-                 * @zh 指示订阅是否自动续订。
-                 */
-                isAutoRenewing(): number;
-                /**
-                 * @en Hash code
-                 * @zh hash值
-                 */
-                hashCode(): number;
-                /**
-                 * @en The quantity of the purchased product.
-                 * @zh 购买产品的数量。
-                 */
-                getQuantity(): number;
-                /**
-                 * @en The payload specified when the purchase was acknowledged or consumed.
-                 * @zh 确认或消费购买时指定的有效负载。
-                 */
-                getDeveloperPayload(): string;
-                /**
-                 * @en Returns a unique order identifier for the transaction.
-                 * @zh 交易的唯一订单标识符。
-                 */
-                getOrderId(): string;
-                /**
-                 * @en Returns a String in JSON format that contains details about the purchase order.
-                 * @zh 包含有关采购订单详细信息的 JSON 格式的字符串。
-                 */
-                getOriginalJson(): string;
-                /**
-                 * @en The application package from which the purchase originated.
-                 * @zh 购买来源的应用程序包。
-                 */
-                getPackageName(): string;
-                /**
-                 * @en A token that uniquely identifies a purchase for a given item and user pair.
-                 * @zh 唯一标识给定商品和用户对的购买的令牌。
-                 */
-                getPurchaseToken(): string;
-                /**
-                 * @en String containing the signature of the purchase data that was signed with the private key of the developer.
-                 * @zh 包含使用开发者私钥签名的购买数据签名的字符串。
-                 */
-                getSignature(): string;
-                /**
-                 * @en To string
-                 * @zh 转换成字符串
-                 */
-                toString(): string;
-                /**
-                 * @en Returns account identifiers that were provided when the purchase was made.
-                 * @zh 返回购买时提供的帐户标识符。
-                 */
-                getAccountIdentifiers(): __types_jsb_jsb__AccountIdentifiers;
-                /**
-                 * @en The PendingPurchaseUpdate for an uncommitted transaction.
-                 * @zh 返回PendingPurchaseUpdate未提交的事务。
-                 */
-                getPendingPurchaseUpdate(): __types_jsb_jsb__PendingPurchaseUpdate;
-                /**
-                 * @en the product Ids.
-                 * @zh 产品 ID。
-                 */
-                getProducts(): string[];
-            }
-            export interface BillingConfig {
-                /**
-                 * @en The customer's country code.
-                 * @zh 客户的国家代码。
-                 */
-                getCountryCode(): string;
-            }
-            /**
-             * @en The details used to report transactions made via alternative billing without user choice to use Google Play Billing.
-             * @zh 用于报告用户未选择使用 Google Play Billing方式而通过替代Billing方式进行的交易的详细信息。
-             */
-            export interface AlternativeBillingOnlyReportingDetails {
-                /**
-                 * @en An external transaction token that can be used to report a transaction made via alternative billing
-                 *     without user choice to use Google Play billing.
-                 * @zh 返回一个外部交易令牌，该令牌可用于报告通过替代付款方式进行的交易，而无需用户选择使用 Google Play 付款方式。
-                 */
-                getExternalTransactionToken(): string;
-            }
-            /**
-             * @en The details used to report transactions made via external offer.
-             * @zh 用于报告通过外部报价进行的交易的详细信息。
-             */
-            export interface ExternalOfferReportingDetails {
-                /**
-                 * @en An external transaction token that can be used to report a transaction made via external offer.
-                 * @zh 可用于报告通过外部报价进行的交易的外部交易令牌。
-                 */
-                getExternalTransactionToken(): string;
-            }
-            /**
-             * @en Results related to in-app messaging.
-             * @zh 与应用程序内消息相关的结果。
-             */
-            export class InAppMessageResult {
-                static InAppMessageResponseCode: typeof __types_jsb_jsb__InAppMessageResponseCode;
-                /**
-                 * @en Response code for the in-app messaging API call.
-                 * @zh 应用内消息传递 API 调用的响应代码。
-                 */
-                getResponseCode(): number;
-                /**
-                 * @en Token that identifies the purchase to be acknowledged, if any.
-                 * @zh 返回标识需要确认的购买的令牌。
-                 */
-                getPurchaseToken(): string;
-            }
-            export interface BillingResultBuilder {
-                setDebugMessage(productType: string): __types_jsb_jsb__BillingResultBuilder;
-                setResponseCode(productType: number): __types_jsb_jsb__BillingResultBuilder;
-                build(): __types_jsb_jsb__BillingResult;
-            }
-            export class BillingResult {
-                static Builder: __types_jsb_jsb__BillingResultBuilder;
-                getResponseCode(): number;
-                getDebugMessage(): string;
-                toString(): string;
-                public static newBuilder(): __types_jsb_jsb__BillingResultBuilder;
-            }
-            export interface UserChoiceBillingListener {
-                userSelectedAlternativeBilling(userChoiceDetails: __types_jsb_jsb__UserChoiceDetails): void;
-            }
-            export interface PurchasesUpdatedListener {
-                onPurchasesUpdated(billingResult: __types_jsb_jsb__BillingResult, purchases: __types_jsb_jsb__Purchase[]): void;
-            }
-            export interface BillingClientStateListener {
-                onBillingServiceDisconnected(): void;
-                onBillingSetupFinished(billingResult: __types_jsb_jsb__BillingResult): void;
-            }
-            export interface PendingPurchasesParamsBuilder {
-                enableOneTimeProducts: () => __types_jsb_jsb__PendingPurchasesParamsBuilder;
-                enablePrepaidPlans: () => __types_jsb_jsb__PendingPurchasesParamsBuilder;
-                build: () => __types_jsb_jsb__PendingPurchasesParams;
-            }
-            export class PendingPurchasesParams {
-                public static newBuilder(): __types_jsb_jsb__PendingPurchasesParamsBuilder;
-            }
-            export interface QueryProductDetailsParamsProductBuilder {
-                setProductId: (productID: string) => __types_jsb_jsb__QueryProductDetailsParamsProductBuilder;
-                setProductType: (productType: string) => __types_jsb_jsb__QueryProductDetailsParamsProductBuilder;
-                build: () => __types_jsb_jsb__QueryProductDetailsParamsProduct;
-            }
-            export class QueryProductDetailsParamsProduct {
-                public static newBuilder(): __types_jsb_jsb__QueryProductDetailsParamsProductBuilder;
-            }
-            export interface QueryProductDetailsParamsBuilder {
-                setProductList: (products: __types_jsb_jsb__QueryProductDetailsParamsProduct[]) => __types_jsb_jsb__QueryProductDetailsParamsBuilder;
-                build: () => __types_jsb_jsb__QueryProductDetailsParams;
-            }
-            export class QueryProductDetailsParams {
-                static Product: typeof __types_jsb__jsb.QueryProductDetailsParamsProduct;
-                public static newBuilder(): __types_jsb_jsb__QueryProductDetailsParamsBuilder;
-            }
-            export interface ProductDetailsResponseListener {
-                onProductDetailsResponse(billingResult: __types_jsb_jsb__BillingResult, productDetailsList: __types_jsb_jsb__ProductDetails[]): void;
-            }
-            export interface ConsumeResponseListener {
-                onConsumeResponse(billingResult: __types_jsb_jsb__BillingResult, token: string): void;
-            }
-            export interface AcknowledgePurchaseResponseListener {
-                onAcknowledgePurchaseResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-            }
-            export interface BillingClientBuilder {
-                enableAlternativeBillingOnly: () => __types_jsb_jsb__BillingClientBuilder;
-                enableExternalOffer: () => __types_jsb_jsb__BillingClientBuilder;
-                enablePendingPurchases: (params: __types_jsb_jsb__PendingPurchasesParams) => __types_jsb_jsb__BillingClientBuilder;
-                enableUserChoiceBilling: (userChoiceBillingListener: __types_jsb_jsb__UserChoiceBillingListener) => __types_jsb_jsb__BillingClientBuilder;
-                setListener: (listener: __types_jsb_jsb__PurchasesUpdatedListener) => __types_jsb_jsb__BillingClientBuilder;
-                build: () => __types_jsb_jsb__BillingClient;
-            }
-            export interface PurchasesResponseListener {
-                onQueryPurchasesResponse(billingResult: __types_jsb_jsb__BillingResult, purchase: __types_jsb_jsb__Purchase[]): void;
-            }
-            export interface BillingConfigResponseListener {
-                onBillingConfigResponse(billingResult: __types_jsb_jsb__BillingResult, billingConfig: __types_jsb_jsb__BillingConfig): void;
-            }
-            export interface AlternativeBillingOnlyReportingDetailsListener {
-                onAlternativeBillingOnlyTokenResponse(billingResult: __types_jsb_jsb__BillingResult, alternativeBillingOnlyReportingDetails: __types_jsb_jsb__AlternativeBillingOnlyReportingDetails): void;
-            }
-            export interface ExternalOfferReportingDetailsListener {
-                onExternalOfferReportingDetailsResponse(billingResult: __types_jsb_jsb__BillingResult, externalOfferReportingDetails: __types_jsb_jsb__ExternalOfferReportingDetails): void;
-            }
-            export interface AlternativeBillingOnlyAvailabilityListener {
-                onAlternativeBillingOnlyAvailabilityResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-            }
-            export interface ExternalOfferAvailabilityListener {
-                onExternalOfferAvailabilityResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-            }
-            export interface AlternativeBillingOnlyInformationDialogListener {
-                onAlternativeBillingOnlyInformationDialogResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-            }
-            export interface ExternalOfferInformationDialogListener {
-                onExternalOfferInformationDialogResponse(billingResult: __types_jsb_jsb__BillingResult): void;
-            }
-            export interface InAppMessageResponseListener {
-                onInAppMessageResponse(inAppMessageResult: __types_jsb_jsb__InAppMessageResult): void;
-            }
-            /**
-             * @en
-             * Connection state of billing client.
-             *
-             * @zh
-             * Billing client的连接状态
-             */
-            export enum ConnectionState {
-                /**
-                 * @en
-                 * This client was not yet connected to billing service or was already closed.
-                 *
-                 * @zh
-                 * 此客户端尚未连接到Billing服务或已关闭。
-                 */
-                DISCONNECTED = 0,
-                /**
-                 * @en
-                 * This client is currently in process of connecting to billing service.
-                 *
-                 * @zh
-                 * 此客户端目前正在连接到Billing服务。
-                 */
-                CONNECTING = 1,
-                /**
-                 * @en
-                 * This client is currently connected to billing service.
-                 *
-                 * @zh
-                 * 此客户端当前已连接到Billing服务。
-                 */
-                CONNECTED = 2,
-                /**
-                 * @en
-                 * This client was already closed and shouldn't be used again.
-                 *
-                 * @zh
-                 * 该客户端已关闭，不应再次使用。
-                 */
-                CLOSED = 3
-            }
-            /**
-             * @en
-             * Possible response codes.
-             *
-             * @zh
-             * 可能的响应代码。
-             */
-            export enum BillingResponseCode {
-                /**
-                 * @en
-                 * This field is deprecated.
-                 * See SERVICE_UNAVAILABLE which will be used instead of this code.
-                 *
-                 * @zh
-                 * 这个字段已经废弃。
-                 * 看看SERVICE_UNAVAILABLE将使用哪一个来代替此代码。
-                 */
-                SERVICE_TIMEOUT = -3,
-                /**
-                 * @en
-                 * The requested feature is not supported by the Play Store on the current device.
-                 *
-                 * @zh
-                 * 当前设备上的 Play Store 不支持所请求的功能。
-                 */
-                FEATURE_NOT_SUPPORTED = -2,
-                /**
-                 * @en
-                 * The app is not connected to the Play Store service via the Google Play Billing Library.
-                 *
-                 * @zh
-                 * 该应用未通过 Google Play Billing库连接到 Play Store 服务。
-                 */
-                SERVICE_DISCONNECTED = -1,
-                /**
-                 * @en
-                 * Success.
-                 *
-                 * @zh
-                 * 成功。
-                 */
-                OK = 0,
-                /**
-                 * @en
-                 * Transaction was canceled by the user.
-                 *
-                 * @zh
-                 * 交易已被用户取消。
-                 */
-                USER_CANCELED = 1,
-                /**
-                 * @en
-                 * The service is currently unavailable.
-                 *
-                 * @zh
-                 * 当前设备上的 Play Store 不支持所请求的功能。
-                 */
-                SERVICE_UNAVAILABLE = 2,
-                /**
-                 * @en
-                 * A user billing error occurred during processing.
-                 *
-                 * @zh
-                 * 处理过程中出现用户billing错误。
-                 */
-                BILLING_UNAVAILABLE = 3,
-                /**
-                 * @en
-                 * The requested product is not available for purchase.
-                 *
-                 * @zh
-                 * 所请求的产品无法购买。
-                 */
-                ITEM_UNAVAILABLE = 4,
-                /**
-                 * @en
-                 * Error resulting from incorrect usage of the API.
-                 *
-                 * @zh
-                 * 由于错误使用 API 而导致的错误。
-                 */
-                DEVELOPER_ERROR = 5,
-                /**
-                 * @en
-                 * Fatal error during the API action.
-                 *
-                 * @zh
-                 * API 操作期间发生致命错误。
-                 */
-                ERROR = 6,
-                /**
-                 * @en
-                 * The purchase failed because the item is already owned.
-                 *
-                 * @zh
-                 * 购买失败，因为该物品已被拥有。
-                 */
-                ITEM_ALREADY_OWNED = 7,
-                /**
-                 * @en
-                 * Requested action on the item failed since it is not owned by the user.
-                 *
-                 * @zh
-                 * 由于该项目不属于用户，因此对该项目请求的操作失败。
-                 */
-                ITEM_NOT_OWNED = 8,
-                /**
-                 * @en
-                 * A network error occurred during the operation.
-                 *
-                 * @zh
-                 * 操作期间发生网络错误。
-                 */
-                NETWORK_ERROR = 12
-            }
-            /**
-             * @en
-             * Features/capabilities supported by isFeatureSupported.
-             *
-             * @zh
-             * 支持的特性/能力isFeatureSupported。
-             */
-            export enum FeatureType {
-                /**
-                 * @en
-                 * Purchase/query for subscriptions.
-                 *
-                 * @zh
-                 * 购买/查询订阅。
-                 */
-                SUBSCRIPTIONS = "subscriptions",
-                /**
-                 * @en
-                 * Subscriptions update/replace.
-                 *
-                 * @zh
-                 * 订阅更新/替换。
-                 */
-                SUBSCRIPTIONS_UPDATE = "subscriptionsUpdate",
-                /**
-                 * @en
-                 * Launch a price change confirmation flow.
-                 *
-                 * @zh
-                 * 启动价格变动确认流程。
-                 */
-                PRICE_CHANGE_CONFIRMATION = "priceChangeConfirmation",
-                /**
-                 * @en
-                 * Show in-app messages.
-                 *
-                 * @zh
-                 * 显示应用内消息。
-                 */
-                IN_APP_MESSAGING = "bbb",
-                /**
-                 * @en
-                 * Play billing library support for querying and purchasing.
-                 *
-                 * @zh
-                 * Play Billing库支持查询、购买。
-                 */
-                PRODUCT_DETAILS = "fff",
-                /**
-                 * @en
-                 * Get billing config.
-                 *
-                 * @zh
-                 * 获取计费配置。
-                 */
-                BILLING_CONFIG = "ggg",
-                /**
-                 * @en
-                 * Alternative billing only.
-                 *
-                 * @zh
-                 * 仅限替代Billing。
-                 */
-                ALTERNATIVE_BILLING_ONLY = "jjj",
-                /**
-                 * @en
-                 * Play billing library support for external offer.
-                 *
-                 * @zh
-                 * Play billing库支持外部报价。
-                 */
-                EXTERNAL_OFFER = "kkk"
-            }
-            /**
-             * @en
-             * Supported Product types.
-             *
-             * @zh
-             * 支持的产品类型。
-             */
-            export enum ProductType {
-                /**
-                 * @en
-                 * A Product type for Android apps in-app products.
-                 *
-                 * @zh
-                 * Android 应用内产品的产品类型。
-                 */
-                INAPP = "inapp",
-                /**
-                 * @en
-                 * A Product type for Android apps subscriptions.
-                 *
-                 * @zh
-                 * Android 应用程序订阅的产品类型。
-                 */
-                SUBS = "subs"
-            }
-            /**
-             * @en
-             * A high-level category of the in-app message.
-             * One category can be mapped to multiple in-app messages.
-             *
-             * @zh
-             * 应用程序内信息的高级类别。
-             * 一个类别可映射到多个应用程序内信息。
-             */
-            export enum InAppMessageCategoryId {
-                /**
-                 * @en
-                 * A Product type for Android apps in-app products.
-                 *
-                 * @zh
-                 * 应用程序中未知的消息类别 ID
-                 */
-                UNKNOWN_IN_APP_MESSAGE_CATEGORY_ID = 0,
-                /**
-                 * @en
-                 * The in-app messages of this category are for transactional purpose, such as payment issues.
-                 *
-                 * @zh
-                 * 这类应用内信息用于交易目的，如支付问题。
-                 */
-                TRANSACTIONAL = 2
-            }
-            /**
-             * @en
-             * Supported replacement modes to replace an existing subscription with a new one.
-             *
-             * @zh
-             * 支持替换模式，可将现有订购替换为新订购。
-             */
-            export enum ReplacementMode {
-                /**
-                 * @en
-                 * Unknown replacement mode.
-                 *
-                 * @zh
-                 * 未知替换模式
-                 */
-                UNKNOWN_REPLACEMENT_MODE = 0,
-                /**
-                 * @en
-                 * The new plan takes effect immediately, and the remaining time will be prorated and credited to the user.
-                 *
-                 * @zh
-                 * 新计划立即生效，剩余时间将按比例计入用户贷方。
-                 */
-                WITH_TIME_PRORATION = 1,
-                /**
-                 * @en
-                 * The new plan takes effect immediately, and the billing cycle remains the same.
-                 *
-                 * @zh
-                 * 新计划立即生效，计费周期保持不变。
-                 */
-                CHARGE_PRORATED_PRICE = 2,
-                /**
-                 * @en
-                 * The new plan takes effect immediately, and the new price will be charged on next recurrence time.
-                 *
-                 * @zh
-                 * 新计划立即生效，新价格将在下次复诊时收取。
-                 */
-                WITHOUT_PRORATION = 3,
-                /**
-                 * @en
-                 * Replacement takes effect immediately, and the user is charged full price of new plan and
-                 * is given a full billing cycle of subscription, plus remaining prorated time from the old plan.
-                 *
-                 * @zh
-                 * 替换立即生效，用户将被收取新计划的全额费用，并获得一个完整的计费周期，加上旧计划按比例计算的剩余时间。
-                 */
-                CHARGE_FULL_PRICE = 5,
-                /**
-                 * @en
-                 * The new purchase takes effect immediately, the new plan will take effect when the old item expires.
-                 *
-                 * @zh
-                 * 新购买立即生效，新计划将在旧项目到期时生效。
-                 */
-                DEFERRED = 6
-            }
-            /**
-             * @en
-             * Possible response codes.
-             *
-             * @zh
-             * 可能的响应代码。
-             */
-            export enum InAppMessageResponseCode {
-                /**
-                 * @en
-                 * The flow has finished and there is no action needed from developers.
-                 *
-                 * @zh
-                 * 流程已经结束，开发人员无需采取任何行动。
-                 */
-                NO_ACTION_NEEDED = 0,
-                /**
-                 * @en
-                 * The subscription status changed.
-                 *
-                 * @zh
-                 * 订阅状态已更改。
-                 */
-                SUBSCRIPTION_STATUS_UPDATED = 1
-            }
-            /**
-             * @en
-             * Recurrence mode of the pricing phase.
-             *
-             * @zh
-             * 定价阶段的复现模式。
-             */
-            export enum RecurrenceMode {
-                /**
-                 * @en
-                 * The billing plan payment recurs for infinite billing periods unless cancelled.
-                 *
-                 * @zh
-                 * 除非取消，否则billing计划付款将无限期地重复。
-                 */
-                INFINITE_RECURRING = 1,
-                /**
-                 * @en
-                 * The billing plan payment recurs for a fixed number of billing period set in billingCycleCount.
-                 *
-                 * @zh
-                 * Billing计划付款将在 billingCycleCount 中设置的固定计费周期内重复发生。
-                 */
-                FINITE_RECURRING = 2,
-                /**
-                 * @en
-                 * The billing plan payment is a one time charge that does not repeat.
-                 *
-                 * @zh
-                 * Billing计划付款是一次性费用，不会重复。
-                 */
-                NON_RECURRING = 3
-            }
-            export interface ProductDetailsParamsBuilder {
-                setOfferToken: (offerToken: string) => __types_jsb_jsb__ProductDetailsParamsBuilder;
-                setProductDetails: (productDetails: __types_jsb_jsb__ProductDetails) => __types_jsb_jsb__ProductDetailsParamsBuilder;
-                build: () => __types_jsb_jsb__ProductDetailsParams;
-            }
-            export class ProductDetailsParams {
-                static Builder: __types_jsb_jsb__ProductDetailsParamsBuilder;
-                static newBuilder: () => __types_jsb_jsb__ProductDetailsParamsBuilder;
-            }
-            export interface SubscriptionUpdateParamsBuilder {
-                setOldPurchaseToken: (purchaseToken: string) => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-                setOriginalExternalTransactionId: (externalTransactionId: string) => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-                setSubscriptionReplacementMode: (subscriptionReplacementMode: number) => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-                build: () => __types_jsb_jsb__SubscriptionUpdateParams;
-            }
-            export class SubscriptionUpdateParams {
-                static Builder: __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-                static newBuilder: () => __types_jsb_jsb__SubscriptionUpdateParamsBuilder;
-                static ReplacementMode: typeof __types_jsb__jsb.ReplacementMode;
-            }
-            export class BillingFlowParams {
-                static ProductDetailsParams: typeof __types_jsb__jsb.ProductDetailsParams;
-                static SubscriptionUpdateParams: typeof __types_jsb__jsb.SubscriptionUpdateParams;
-                static Builder: __types_jsb_jsb__BillingFlowParamsBuilder;
-                public static newBuilder(): __types_jsb_jsb__BillingFlowParamsBuilder;
-            }
-            export interface BillingFlowParamsBuilder {
-                setIsOfferPersonalized: (isOfferPersonalized: boolean) => __types_jsb_jsb__BillingFlowParamsBuilder;
-                setObfuscatedAccountId: (obfuscatedAccountid: string) => __types_jsb_jsb__BillingFlowParamsBuilder;
-                setObfuscatedProfileId: (obfuscatedProfileId: string) => __types_jsb_jsb__BillingFlowParamsBuilder;
-                setProductDetailsParamsList: (userChoiceBillingListener: __types_jsb_jsb__ProductDetailsParams[]) => __types_jsb_jsb__BillingFlowParamsBuilder;
-                setSubscriptionUpdateParams: (userChoiceBillingListener: __types_jsb_jsb__SubscriptionUpdateParams) => __types_jsb_jsb__BillingFlowParamsBuilder;
-                build: () => __types_jsb_jsb__BillingFlowParams;
-            }
-            export interface ConsumeParamsBuilder {
-                setPurchaseToken: (purchaseToken: string) => __types_jsb_jsb__ConsumeParamsBuilder;
-                build: () => __types_jsb_jsb__ConsumeParams;
-            }
-            export class ConsumeParams {
-                public static newBuilder(): __types_jsb_jsb__ConsumeParamsBuilder;
-            }
-            export interface AcknowledgePurchaseParamsBuilder {
-                setPurchaseToken: (purchaseToken: string) => __types_jsb_jsb__AcknowledgePurchaseParamsBuilder;
-                build: () => __types_jsb_jsb__AcknowledgePurchaseParams;
-            }
-            export class AcknowledgePurchaseParams {
-                public static newBuilder(): __types_jsb_jsb__AcknowledgePurchaseParamsBuilder;
-            }
-            export interface QueryPurchasesParamsBuilder {
-                setProductType: (productType: string) => __types_jsb_jsb__QueryPurchasesParamsBuilder;
-                build: () => __types_jsb_jsb__QueryPurchasesParams;
-            }
-            export class QueryPurchasesParams {
-                public static newBuilder(): __types_jsb_jsb__QueryPurchasesParamsBuilder;
-            }
-            export interface InAppMessageParamsBuilder {
-                addAllInAppMessageCategoriesToShow: () => __types_jsb_jsb__InAppMessageParamsBuilder;
-                addInAppMessageCategoryToShow: (inAppMessageCategoryId: number) => __types_jsb_jsb__InAppMessageParamsBuilder;
-                build: () => __types_jsb_jsb__InAppMessageParams;
-            }
-            export class InAppMessageParams {
-                public static newBuilder(): __types_jsb_jsb__InAppMessageParamsBuilder;
-                static InAppMessageCategoryId: typeof __types_jsb_jsb__InAppMessageCategoryId;
-            }
-            export interface GetBillingConfigParamsBuilder {
-                build: () => __types_jsb_jsb__GetBillingConfigParams;
-            }
-            export class GetBillingConfigParams {
-                public static newBuilder(): __types_jsb_jsb__GetBillingConfigParamsBuilder;
-            }
-            export class BillingClient {
-                static Builder: __types_jsb_jsb__BillingFlowParamsBuilder;
-                static ConnectionState: typeof __types_jsb__jsb.ConnectionState;
-                static BillingResponseCode: typeof __types_jsb__jsb.BillingResponseCode;
-                static FeatureType: typeof __types_jsb__jsb.FeatureType;
-                static ProductType: typeof __types_jsb__jsb.ProductType;
-                public static newBuilder(): __types_jsb_jsb__BillingClientBuilder;
-                startConnection: (listener: __types_jsb_jsb__BillingClientStateListener) => void;
-                endConnection: () => void;
-                getConnectionState: () => number;
-                isReady: () => void;
-                queryProductDetailsAsync: (params: __types_jsb_jsb__QueryProductDetailsParams, listener: __types_jsb_jsb__ProductDetailsResponseListener) => void;
-                launchBillingFlow: (params: __types_jsb_jsb__BillingFlowParams) => void;
-                consumeAsync: (params: __types_jsb_jsb__ConsumeParams, listener: __types_jsb_jsb__ConsumeResponseListener) => void;
-                acknowledgePurchase: (params: __types_jsb_jsb__AcknowledgePurchaseParams, listener: __types_jsb_jsb__AcknowledgePurchaseResponseListener) => void;
-                queryPurchasesAsync: (params: __types_jsb_jsb__QueryPurchasesParams, listener: __types_jsb_jsb__PurchasesResponseListener) => void;
-                getBillingConfigAsync: (params: __types_jsb_jsb__GetBillingConfigParams, listener: __types_jsb_jsb__BillingConfigResponseListener) => void;
-                createAlternativeBillingOnlyReportingDetailsAsync: (listener: __types_jsb_jsb__AlternativeBillingOnlyReportingDetailsListener) => void;
-                isAlternativeBillingOnlyAvailableAsync: (listener: __types_jsb_jsb__AlternativeBillingOnlyAvailabilityListener) => void;
-                createExternalOfferReportingDetailsAsync: (listener: __types_jsb_jsb__ExternalOfferReportingDetailsListener) => void;
-                isExternalOfferAvailableAsync: (listener: __types_jsb_jsb__ExternalOfferAvailabilityListener) => void;
-                isFeatureSupported: (productType: string) => __types_jsb_jsb__BillingResult;
-                showAlternativeBillingOnlyInformationDialog: (listener: __types_jsb_jsb__AlternativeBillingOnlyInformationDialogListener) => void;
-                showExternalOfferInformationDialog: (listener: __types_jsb_jsb__ExternalOfferInformationDialogListener) => void;
-                showInAppMessages: (params: __types_jsb_jsb__InAppMessageParams, listener: __types_jsb_jsb__InAppMessageResponseListener) => void;
-            }
             export class PlayException {
+                /**
+                 * @en Getting Exception message.
+                 * @zh 获取异常信息。
+                 */
                 getMessage(): string;
+                /**
+                 * @en Returns the name of the exception in the local language of the user (Chinese etc.).
+                 * @zh 用户的本地语言（中文等）返回异常名称。
+                 */
                 getLocalizedMessage(): string;
+                /**
+                 * @en Print the exception stack.
+                 * @zh 打印异常堆栈。
+                 */
                 printStackTrace(): void;
+                /**
+                 * @en To string.
+                 * @zh 转换成字符串。
+                 */
                 toString(): string;
             }
             export interface OnCanceledListener {
+                /**
+                 * @en Called when the Task is canceled successfully.
+                 * @zh 当任务成功取消时调用。
+                 */
                 onCanceled(): void;
             }
             export interface OnCompleteListener {
+                /**
+                 * @en Called when the Task completes.
+                 * @zh 任务完成时调用。
+                 */
                 onComplete(task: any): void;
             }
             export interface OnFailureListener {
+                /**
+                 * @en Called when the Task fails with an exception.
+                 * @zh 当任务因异常而失败时调用。
+                 */
                 onFailure(e: __types_jsb_jsb__PlayException): void;
             }
             export interface OnSuccessListener {
+                /**
+                 * @en Called when the Task completes successfully.
+                 * @zh 成功完成时调用 Task 。
+                 */
                 onSuccess(result: any): void;
             }
             export interface OnContinueWithListener {
-                then(result: any): void;
-            }
-            export interface OnContinueWithTaskListener {
+                /**
+                 * @en Returns the result of applying this Continuation to task.
+                 * @zh 返回将此 Continuation 应用到 的结果 task 。
+                 */
                 then(result: any): void;
             }
             export class PlayTask {
+                /**
+                 * @en Adds a listener that is called if the Task is canceled.
+                 * @zh 添加一个侦听器，当任务被取消时调用该侦听器。
+                 */
                 public addOnCanceledListener(listener: __types_jsb_jsb__OnCanceledListener): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Adds a listener that is called when the Task completes.
+                 * @zh 添加在任务完成时调用的监听器。
+                 */
                 public addOnCompleteListener(listener: __types_jsb_jsb__OnCompleteListener): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Adds a listener that is called if the Task fails.
+                 * @zh 添加一个在任务失败时调用的监听器。
+                 */
                 public addOnFailureListener(listener: __types_jsb_jsb__OnFailureListener): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Adds a listener that is called if the Task completes successfully.
+                 * @zh 添加一个侦听器，当任务成功完成时调用该侦听器。
+                 */
                 public addOnSuccessListener(listener: __types_jsb_jsb__OnSuccessListener): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Returns a new Task that will be completed with the result of applying the specified Continuation to this Task.
+                 * @zh 返回一个新任务，该任务将通过将指定的延续应用于此任务的结果来完成。
+                 */
                 public continueWith(listener: __types_jsb_jsb__OnContinueWithListener): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Gets the result of the Task, if it has already completed.
+                 * @zh 如果任务已经完成，则获取任务的结果。
+                 */
                 public getResult(listener: __types_jsb_jsb__OnSuccessListener): any;
+                /**
+                 * @en Returns true if the Task is canceled; false otherwise.
+                 * @zh true 如果任务被取消则返回；false 否则返回。
+                 */
                 public isCanceled(): boolean;
+                /**
+                 * @en Returns true if the Task is complete; false otherwise.
+                 * @zh true 如果任务完成则返回；false 否则返回。
+                 */
                 public isComplete(): boolean;
+                /**
+                 * @en Returns true if the Task has completed successfully; false otherwise.
+                 * @zh true 如果任务已成功完成则返回；false 否则返回。
+                 */
                 public isSuccessful(): boolean;
             }
+            /**
+             * @en Represents the current authentication status with Play Games Services.
+             * @zh 代表 Play Games Services 的当前身份验证状态。
+             */
             export class AuthenticationResult {
+                /**
+                 * @en Returns true if your game is authenticated to Play Games Services.
+                 * @zh 返回true表示您的游戏已通过 Play Games Services 的身份验证。
+                 */
                 public isAuthenticated(): boolean;
             }
+            /**
+             * @en Contains the result of RecallClient.requestRecallAccess().
+             * @zh 包含 RecallClient.requestRecallAccess() 的返回结果
+             */
             export class RecallAccess {
+                /**
+                 * @en Hash code
+                 * @zh hash值
+                 */
                 public hashCode(): number;
+                /**
+                 * @en Returns the session id to be passed into PGS server API.
+                 * @zh 返回要传递到 PGS server API 的会话 ID。
+                 */
                 public getSessionId(): string;
+                /**
+                 * @en Is it equal to another RecallAccess.
+                 * @zh 判断与另一个 RecallAccess 是否相等。
+                 */
                 public equals(other: __types_jsb_jsb__RecallAccess): boolean;
             }
+            /**
+             * @en A client for performing sign-in with Play Games Services.
+             * @zh 用于使用 Play Games Services 执行登录的客户端。
+             */
             export class GamesSignInClient {
+                /**
+                 * @en Returns the current authentication status via an AuthenticationResult.
+                 * @zh 通过 返回当前身份验证状态 AuthenticationResult 。
+                 */
                 public isAuthenticated(): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Requests server-side access to Play Games Services for the currently signed-in player.
+                 * @zh 向当前登录的玩家请求服务器端访问 Play Games Services。
+                 */
                 public requestServerSideAccess(serverClientId: string, forceRefreshToken: boolean): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Manually requests that your game sign in with Play Games Services.
+                 * @zh 手动请求您的游戏通过 Play Games Services 登录。
+                 */
                 public signIn(): __types_jsb_jsb__PlayTask;
             }
+            /**
+             * @en Data interface for retrieving achievement information.
+             * @zh 用于检索成就信息的数据接口。
+             */
             export class Achievement {
+                /**
+                 * @en Constant returned by getState() indicating an unlocked achievement.
+                 * @zh getState 返回的常量表示未解锁的成就。
+                 */
                 public static STATE_UNLOCKED: number;
+                /**
+                 * @en Constant returned by getState() indicating a revealed achievement.
+                 * @zh getState 返回的常量表示已显示的成就。
+                 */
                 public static STATE_REVEALED: number;
+                /**
+                 * @en Constant returned by getState() indicating a hidden achievement.
+                 * @zh getState 返回的常量表示隐藏的成就。
+                 */
                 public static STATE_HIDDEN: number;
+                /**
+                 * @en Constant returned by getType() indicating a standard achievement.
+                 * @zh getState 返回的常量表示标准的成就。
+                 */
                 public static TYPE_STANDARD: number;
+                /**
+                 * @en Constant returned by getType() indicating an incremental achievement.
+                 * @zh getState 返回的常量表示增量的成就。
+                 */
                 public static TYPE_INCREMENTAL: number;
+                /**
+                 * @en Retrieves the number of steps this user has gone toward unlocking this achievement;
+                 *     only applicable for TYPE_INCREMENTAL achievement types.
+                 * @zh 检索该用户为解锁该成就所走的步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+                 */
                 public getCurrentSteps(): number;
+                /**
+                 * @en Returns the Achievement.AchievementState of the achievement.
+                 * @zh 返回 Achievement.AchievementState 成就。
+                 */
                 public getState(): number;
+                /**
+                 * @en Retrieves the total number of steps necessary to unlock this achievement; only applicable for TYPE_INCREMENTAL achievement types
+                 * @zh 检索解锁此成就所需的总步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+                 */
                 public getTotalSteps(): number;
+                /**
+                 * @en Returns the Achievement.AchievementType of this achievement.
+                 * @zh 返回 Achievement.AchievementType 此成就。
+                 */
                 public getType(): number;
+                /**
+                 * @en Retrieves the timestamp (in millseconds since epoch) at which this achievement was last updated.
+                 * @zh 检索此成就最后更新的时间戳（以纪元以来的毫秒数为单位）。
+                 */
                 public getLastUpdatedTimestamp(): number;
+                /**
+                 * @en Retrieves the XP value of this achievement.
+                 * @zh 检索此成就的 XP 值。
+                 */
                 public getXpValue(): number;
+                /**
+                 * @en Retrieves the ID of this achievement.
+                 * @zh 检索此成就的 ID。
+                 */
                 public getAchievementId(): string;
+                /**
+                 * @en Retrieves the description for this achievement.
+                 * @zh 检索此成就的描述。
+                 */
                 public getDescription(): string;
+                /**
+                 * @enRetrieves the number of steps this user has gone toward unlocking this achievement
+                 *              (formatted for the user's locale); only applicable for TYPE_INCREMENTAL achievement types.
+                 * @zh 检索该用户为解锁此成就所经过的步数（根据用户的语言环境格式化）；仅适用于 TYPE_INCREMENTAL成就类型。
+                 */
                 public getFormattedCurrentSteps(): string;
+                /**
+                 * @en Loads the total number of steps necessary to unlock this achievement
+                 *     (formatted for the user's locale) into the given CharArrayBuffer; only applicable for TYPE_INCREMENTAL achievement types.
+                 * @zh 检索解锁此成就所需的总步数；仅适用于 TYPE_INCREMENTAL 成就类型。
+                 */
                 public getFormattedTotalSteps(): string;
+                /**
+                 * @en Retrieves the name of this achievement.
+                 * @zh 检索此成就的名称。
+                 */
                 public getName(): string;
+                /**
+                 * @en Retrieves a URI that can be used to load the achievement's revealed image icon.
+                 * @zh 检索可用于加载成就显示图像图标的 URI。
+                 */
                 public getRevealedImageUrl(): string;
+                /**
+                 * @en Retrieves a URI that can be used to load the achievement's unlocked image icon.
+                 * @zh 检索可用于加载成就的解锁图像图标的 URI。
+                 */
                 public getUnlockedImageUrl(): string;
             }
+            /**
+             * @en Data structure providing access to a list of achievements.
+             * @zh 提供访问成就列表的数据结构。
+             */
             export class AchievementBuffer {
+                /**
+                 * @en Get the count of achievement.
+                 * @zh 获取 achievement 的数量 。
+                 */
                 public getCount(): number;
+                /**
+                 * @en Get the item at the specified position.
+                 * @zh 获取指定位置的物品。
+                 */
                 public get(i: number): __types_jsb_jsb__Achievement;
+                /**
+                 * @en Releases the data buffer, for use in try-with-resources.
+                 * @zh 释放数据缓冲区，以供在 try-with-resources 中使用。
+                 */
                 public close(): void;
+                /**
+                 * @en Releases resources used by the buffer.
+                 * @zh 释放缓冲区使用的资源。
+                 */
                 public release(): void;
-                public isClosed(): boolean;
             }
+            /**
+             * @en Class to return annotated data. Currently, the only annotation is whether the data is stale or not.
+             * @zh 用于返回带 annotated 数据的类。目前，唯一的 annotated 是数据是否过时。
+             */
             export class AnnotatedData {
+                /**
+                 * @en Returns true if the data returned by get() is stale.
+                 * @zh true如果返回的数据已过时，则返回 get() 。
+                 */
                 public isStale(): boolean;
+                /**
+                 * @en Returns the data that is annotated by this class.
+                 * @zh 返回由此类 annotated 的数据。
+                 */
                 public get(): __types_jsb_jsb__AchievementBuffer;
             }
+            /**
+             * @en A client to interact with achievements functionality.
+             * @zh 与 Achievements 功能交互的客户端。
+             */
             export class AchievementsClient {
+                /**
+                 * @en Show default achievement page.
+                 * @zh 显示默认的成就页面。
+                 */
                 public showAchievements(): void;
+                /**
+                 * @en Returns a Task which asynchronously increments an achievement by the given number of steps.
+                 * @zh 返回一个 Task 以给定步数异步增加成就的方法。
+                 */
                 public incrementImmediate(id: string, numSteps: number): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Returns a Task which asynchronously loads an annotated AchievementBuffer that represents the achievement data.
+                 *     for the currently signed-in player.
+                 * @zh 返回一个 Task 异步加载的task， AchievementBuffer该注释代表当前登录玩家的成就数据。
+                 */
                 public load(forceReload: boolean): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Returns a Task which asynchronously reveals a hidden achievement to the currently signed in player.
+                 * @zh 返回一个 Task 异步向当前登录的玩家显示隐藏成就的对象。
+                 */
                 public revealImmediate(id: string): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Returns a Task which asynchronously sets an achievement to have at least the given number of steps completed.
+                 * @zh 返回一个 Task 异步设置成就以至少完成给定数量的步骤。
+                 */
                 public setStepsImmediate(id: string, numSteps: number): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Returns a Task which asynchronously unlocks an achievement for the currently signed in player.
+                 * @zh 返回一个 Task 异步解锁当前登录玩家的成就。
+                 */
                 public unlockImmediate(id: string): __types_jsb_jsb__PlayTask;
+                /**
+                 * @en Increments an achievement by the given number of steps.
+                 * @zh 按给定的步数增加成就。
+                 */
                 public increment(id: string, numSteps: number): void;
+                /**
+                 * @en Reveals a hidden achievement to the currently signed-in player.
+                 * @zh 向当前登录的玩家揭示隐藏的成就。
+                 */
                 public reveal(id: string): void;
+                /**
+                 * @en Sets an achievement to have at least the given number of steps completed.
+                 * @zh 设置一项成就，至少完成给定数量的步骤。
+                 */
                 public setSteps(id: string, numSteps: number): void;
+                /**
+                 * @en Unlocks an achievement for the currently signed in player.
+                 * @zh 为当前登录的玩家解锁一项成就。
+                 */
                 public unlock(id: string): void;
             }
+            /**
+             * @en A client for the recall functionality.
+             * @zh Recall 功能客户端。
+             */
             export class RecallClient {
+                /**
+                 * @en Returns a RecallAccess to use for server-to-server communication between the 3p game server and Play Games Services server.
+                 * @zh 返回 RecallAccess 用于第三方游戏服务器和 Play 游戏服务服务器之间的服务器到服务器通信。
+                 */
                 public requestRecallAccess(): __types_jsb_jsb__PlayTask;
             }
+            /**
+             * @en Main entry point for the Games APIs. This class provides APIs and interfaces to access the Google Play Games Services functionality.
+             * @zh 游戏 API 的主要入口点。此类提供用于访问 Google Play Games Services 功能的 API 和接口。
+             */
             export class PlayGames {
+                /**
+                 * @en Returns a new instance of AchievementsClient.
+                 * @zh 返回一个新的 AchievementsClient 实例。
+                 */
                 public static getAchievementsClient(): __types_jsb_jsb__AchievementsClient;
+                /**
+                 * @en Returns a new instance of GamesSignInClient.
+                 * @zh 返回一个新的 GamesSignInClient 实例。
+                 */
                 public static getGamesSignInClient(): __types_jsb_jsb__GamesSignInClient;
+                /**
+                 * @en Returns a new instance of RecallClient.
+                 * @zh 返回一个新的 RecallClient 实例。
+                 */
                 public static getRecallClient(): __types_jsb_jsb__RecallClient;
             }
+            /**
+             * @en Entry point for the Play Games SDK.
+             * @zh Play Games SDK 的入口点。
+             */
             export class PlayGamesSdk {
+                /**
+                 * @en Initializes the Play Games SDK using the Game services application id defined in the application's manifest.
+                 * @zh 使用应用程序清单中定义的游戏服务应用程序 ID 初始化 Play 游戏 SDK。
+                 */
                 public static initialize(): void;
             }
-        }
-        /**
-         * @en Represents the details of a one time or subscription product.
-         * @zh 代表一次性或订阅产品的详细信息。
-         */
-        export class __types_jsb_jsb__ProductDetails {
-            static RecurrenceMode: typeof __types_jsb__jsb.RecurrenceMode;
-            equals(other: __types_jsb_jsb__ProductDetails): boolean;
-            /**
-             * @en Hash code
-             * @zh hash值
-             */
-            hashCode(): number;
-            /**
-             * @en The description of the product.
-             * @zh 产品的描述。
-             */
-            getDescription(): string;
-            /**
-             * @en The name of the product being sold.
-             * @zh 所售产品的名称。
-             */
-            getName(): string;
-            /**
-             * @en The product's Id.
-             * @zh 产品的 ID。
-             */
-            getProductId(): string;
-            /**
-             * @en The ProductType of the product.
-             * @zh ProductType产品的。
-             */
-            getProductType(): string;
-            /**
-             * @en The title of the product being sold.
-             * @zh 所售产品的标题。
-             */
-            getTitle(): string;
-            /**
-             * @en To string
-             * @zh 转换成字符串
-             */
-            toString(): string;
-            /**
-             * @en The offer details of an one-time purchase product.
-             * @zh 代表一次性购买产品的报价详情。
-             */
-            getOneTimePurchaseOfferDetails(): __types_jsb_jsb__OneTimePurchaseOfferDetails;
-            /**
-             * @en A list containing all available offers to purchase a subscription product.
-             * @zh 返回包含购买订阅产品的所有可用优惠的列表。
-             */
-            getSubscriptionOfferDetails(): __types_jsb_jsb__SubscriptionOfferDetails[];
-        }
-        export interface __types_jsb_jsb__ProductDetailsParamsBuilder {
-            setOfferToken: (offerToken: string) => __types_jsb_jsb__ProductDetailsParamsBuilder;
-            setProductDetails: (productDetails: __types_jsb_jsb__ProductDetails) => __types_jsb_jsb__ProductDetailsParamsBuilder;
-            build: () => __types_jsb_jsb__ProductDetailsParams;
-        }
-        export class __types_jsb_jsb__ProductDetailsParams {
-            static Builder: __types_jsb_jsb__ProductDetailsParamsBuilder;
-            static newBuilder: () => __types_jsb_jsb__ProductDetailsParamsBuilder;
-        }
-        export interface __types_jsb_jsb__BillingFlowParamsBuilder {
-            setIsOfferPersonalized: (isOfferPersonalized: boolean) => __types_jsb_jsb__BillingFlowParamsBuilder;
-            setObfuscatedAccountId: (obfuscatedAccountid: string) => __types_jsb_jsb__BillingFlowParamsBuilder;
-            setObfuscatedProfileId: (obfuscatedProfileId: string) => __types_jsb_jsb__BillingFlowParamsBuilder;
-            setProductDetailsParamsList: (userChoiceBillingListener: __types_jsb_jsb__ProductDetailsParams[]) => __types_jsb_jsb__BillingFlowParamsBuilder;
-            setSubscriptionUpdateParams: (userChoiceBillingListener: __types_jsb_jsb__SubscriptionUpdateParams) => __types_jsb_jsb__BillingFlowParamsBuilder;
-            build: () => __types_jsb_jsb__BillingFlowParams;
-        }
-        export class __types_jsb_jsb__BillingClient {
-            static Builder: __types_jsb_jsb__BillingFlowParamsBuilder;
-            static ConnectionState: typeof __types_jsb__jsb.ConnectionState;
-            static BillingResponseCode: typeof __types_jsb__jsb.BillingResponseCode;
-            static FeatureType: typeof __types_jsb__jsb.FeatureType;
-            static ProductType: typeof __types_jsb__jsb.ProductType;
-            public static newBuilder(): __types_jsb_jsb__BillingClientBuilder;
-            startConnection: (listener: __types_jsb_jsb__BillingClientStateListener) => void;
-            endConnection: () => void;
-            getConnectionState: () => number;
-            isReady: () => void;
-            queryProductDetailsAsync: (params: __types_jsb_jsb__QueryProductDetailsParams, listener: __types_jsb_jsb__ProductDetailsResponseListener) => void;
-            launchBillingFlow: (params: __types_jsb_jsb__BillingFlowParams) => void;
-            consumeAsync: (params: __types_jsb_jsb__ConsumeParams, listener: __types_jsb_jsb__ConsumeResponseListener) => void;
-            acknowledgePurchase: (params: __types_jsb_jsb__AcknowledgePurchaseParams, listener: __types_jsb_jsb__AcknowledgePurchaseResponseListener) => void;
-            queryPurchasesAsync: (params: __types_jsb_jsb__QueryPurchasesParams, listener: __types_jsb_jsb__PurchasesResponseListener) => void;
-            getBillingConfigAsync: (params: __types_jsb_jsb__GetBillingConfigParams, listener: __types_jsb_jsb__BillingConfigResponseListener) => void;
-            createAlternativeBillingOnlyReportingDetailsAsync: (listener: __types_jsb_jsb__AlternativeBillingOnlyReportingDetailsListener) => void;
-            isAlternativeBillingOnlyAvailableAsync: (listener: __types_jsb_jsb__AlternativeBillingOnlyAvailabilityListener) => void;
-            createExternalOfferReportingDetailsAsync: (listener: __types_jsb_jsb__ExternalOfferReportingDetailsListener) => void;
-            isExternalOfferAvailableAsync: (listener: __types_jsb_jsb__ExternalOfferAvailabilityListener) => void;
-            isFeatureSupported: (productType: string) => __types_jsb_jsb__BillingResult;
-            showAlternativeBillingOnlyInformationDialog: (listener: __types_jsb_jsb__AlternativeBillingOnlyInformationDialogListener) => void;
-            showExternalOfferInformationDialog: (listener: __types_jsb_jsb__ExternalOfferInformationDialogListener) => void;
-            showInAppMessages: (params: __types_jsb_jsb__InAppMessageParams, listener: __types_jsb_jsb__InAppMessageResponseListener) => void;
-        }
-        export class __types_jsb_jsb__PlayGamesSdk {
-            public static initialize(): void;
-        }
-        /// <reference types="./@types/jsb" />
-        /****************************************************************************
-         Copyright (c) 2025 Xiamen Yaji Software Co., Ltd.
-        
-         http://www.cocos.com
-        
-         Permission is hereby granted, free of charge, to any person obtaining a copy
-         of this software and associated documentation files (the "Software"), to deal
-         in the Software without restriction, including without limitation the rights to
-         use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-         of the Software, and to permit persons to whom the Software is furnished to do so,
-         subject to the following conditions:
-        
-         The above copyright notice and this permission notice shall be included in
-         all copies or substantial portions of the Software.
-        
-         THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-         IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-         FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-         AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-         LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-         OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-         THE SOFTWARE.
-         *****************************************************************************/
-        export interface _vendor_google_play_task__OnCanceledListener {
-            onCanceled(): void;
-        }
-        export interface _vendor_google_play_task__OnCompleteListener<TResult, TContinuationResult = void> {
-            onComplete(result: _vendor_google_play_task__TaskHelper<TResult, TContinuationResult>): void;
         }
         export interface _vendor_google_play_task__OnFailureListener {
             onFailure(e: __types_jsb__jsb.PlayException): void;
@@ -75232,38 +75682,6 @@ declare module "cc" {
             isCanceled(): boolean;
             isComplete(): boolean;
             isSuccessful(): boolean;
-        }
-        export class _vendor_google_play_games__AchievementsClient {
-            showAchievements(): void;
-            incrementImmediate(id: string, numSteps: number): _vendor_google_play_task__TaskHelper<boolean>;
-            load(forceReload: boolean): _vendor_google_play_task__TaskHelper<__types_jsb__jsb.AnnotatedData>;
-            revealImmediate(id: string): _vendor_google_play_task__TaskHelper<void>;
-            setStepsImmediate(id: string, numSteps: number): _vendor_google_play_task__TaskHelper<boolean>;
-            unlockImmediate(id: string): _vendor_google_play_task__TaskHelper<void>;
-            increment(id: string, numSteps: number): void;
-            reveal(id: string): void;
-            setSteps(id: string, numSteps: number): void;
-            unlock(id: string): void;
-        }
-        export class _vendor_google_play_games__GamesSignInClientHelper {
-            isAuthenticated(): _vendor_google_play_task__TaskHelper<__types_jsb__jsb.AuthenticationResult>;
-            requestServerSideAccess(serverClientId: string, forceRefreshToken: boolean): _vendor_google_play_task__TaskHelper<string>;
-            signIn(): _vendor_google_play_task__TaskHelper<__types_jsb__jsb.AuthenticationResult>;
-        }
-        export class _vendor_google_play_games__RecallClient {
-            requestRecallAccess(): _vendor_google_play_task__TaskHelper<__types_jsb__jsb.RecallAccess>;
-        }
-        export class _vendor_google_play_games__PlayGamesHelper {
-            static getAchievementsClient(): _vendor_google_play_games__AchievementsClient;
-            static getGamesSignInClient(): _vendor_google_play_games__GamesSignInClientHelper;
-            static getRecallClient(): _vendor_google_play_games__RecallClient;
-        }
-        export class __types_jsb_jsb__AuthenticationResult {
-            public isAuthenticated(): boolean;
-        }
-        export class __types_jsb_jsb__AnnotatedData {
-            public isStale(): boolean;
-            public get(): __types_jsb_jsb__AchievementBuffer;
         }
         export enum _cocos_video_video_player_enums__VideoPlayerEventType {
             /**
